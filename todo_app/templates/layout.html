@@ -9,8 +9,26 @@
 
     <title>{% block title %}To-Do App{% endblock %}</title>
     <style>
+
+      .jumbotron {
+        background-color: antiquewhite;
+      }
+
+      .jumbotron h1 {
+        color: #c000ff;
+      }
+
+      .btn-primary, .badge-primary {
+        border-color: #c000ff;
+        background-color: #c000ff;
+      }
+
       .list-group-item.complete {
         text-decoration: line-through;
+      }
+
+      .list-group-item.complete .complete-btn {
+        color: green;
       }
 
       .list-group-item form {
@@ -23,6 +41,18 @@
         border:none;
         position: relative;
         top: 8px;
+      }
+
+      .list-group-item:hover .delete-btn {
+        display: block;
+      }
+
+      .list-group-item .delete-btn {
+        position: absolute;
+        right: 10px;
+        top: 15px;
+        color: #f54747;
+        display: none;
       }
     </style>
   </head>
