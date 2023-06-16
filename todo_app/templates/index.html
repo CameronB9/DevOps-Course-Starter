@@ -8,7 +8,7 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12">
-			<form method="post" action="/add-todo">
+			<form method="post" action="/todo/add">
 				<div class="mb-3">
 					<label for="new-todo-item">New Todo</label>
 					<input 
@@ -27,8 +27,19 @@
 			<ul class="list-group mb-4">
 				<!-- List the todo items here -->
 				{% for item in todo_items %}
-					<li class="list-group-item">
-						{{ item.title }}
+					<li class="list-group-item {{ 'complete' if item.status == 'Completed' else '' }}">
+						<span>{{ item.title }}</span>
+						<form method="post" action="/todo/change-status/{{ item.id }}">
+							<button>
+								<span class="material-icons">
+									{% if item.status == 'Completed' %}
+										check_box
+									{% else %}
+										check_box_outline_blank
+									{% endif %}
+								</span>
+							</button>
+						</form>
 					</li>
 				{% endfor %}
 			</ul>
