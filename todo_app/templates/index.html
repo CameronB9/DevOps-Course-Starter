@@ -8,6 +8,21 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12">
+			<form method="post" action="/add-todo">
+				<div class="mb-3">
+					<label for="new-todo-item">New Todo</label>
+					<input 
+						type="text" 
+						class="form-control" 
+						id="new-todo-item" 
+						name="new-todo-item" 
+						placeholder="Get stuff done!"
+					/>
+				</div>
+				<button class="btn btn-primary mb-4" type="submit">
+					Add Todo
+				</button>
+			</form>
 			<h2>Items</h2>
 			<ul class="list-group mb-4">
 				<!-- List the todo items here -->
