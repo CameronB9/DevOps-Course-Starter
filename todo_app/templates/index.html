@@ -2,17 +2,70 @@
 {% block title %}To-Do App{% endblock %}
 
 {% block content %}
-  <div class="jumbotron">
-    <h1 class="display-4">To-Do App</h1>
-    <p class="lead">Just another to-do app.</p>
-  </div>
+	<div class="jumbotron">
+		<h1 class="display-4">To-Do App</h1>
+		<p class="lead">Just another to-do app.</p>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<form method="post" action="/todo/add">
+				<div class="mb-3">
+					<div class="input-group mb-3">
+						<input 
+							type="text" 
+							class="form-control" 
+							id="new-todo-item" 
+							name="new-todo-item" 
+							placeholder="Get stuff done!"
+						/>
+						<div class="input-group-append">
+							<button class="btn btn-primary" type="submit">Add Todo</button>
+						</div>
+					</div>
+				</div>
+			</form>
 
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Items</h2>
-      <ul class="list-group mb-4">
-        <!-- List the todo items here -->
-      </ul>
-    </div>
-  </div>
+			<h2>
+				Items
+				<span class="badge badge-primary">
+					{{ num_todos }}
+				</span>
+			</h2>
+			<p>
+				{% if num_todos == 0 %}
+					Nothing here yet!
+				{% elif num_complete_todos == num_todos %}
+					Everything is complete, you can relax for now!
+				{% else %}
+					What are you waiting for, there's {{ num_todos - num_complete_todos }} left!
+				{% endif %} 
+			</p>
+			<ul class="list-group mb-4">
+				<!-- List the todo items here -->
+				{% for item in todo_items %}
+					<li class="list-group-item {{ 'complete' if item.status == 'Completed' else '' }}">
+						<form method="post" action="/todo/change-status/{{ item.id }}">
+							<button>
+								<span class="material-icons complete-btn">
+									{% if item.status == 'Completed' %}
+										check_box
+									{% else %}
+										check_box_outline_blank
+									{% endif %}
+								</span>
+							</button>
+						</form>
+						<span>{{ item.title }}</span>
+						<form method="post" action="/todo/delete/{{ item.id }}">
+							<button class="delete-btn" title="Delete: {{ item.title }}">
+								<span class="material-icons">
+									delete
+								</span>
+							</button>
+						</form>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
 {% endblock %}

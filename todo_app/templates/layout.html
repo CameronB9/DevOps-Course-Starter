@@ -5,8 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <title>{% block title %}To-Do App{% endblock %}</title>
+    <style>
+
+      .jumbotron {
+        background-color: antiquewhite;
+      }
+
+      .jumbotron h1 {
+        color: #c000ff;
+      }
+
+      .btn-primary, .badge-primary {
+        border-color: #c000ff;
+        background-color: #c000ff;
+      }
+
+      .list-group-item.complete {
+        text-decoration: line-through;
+      }
+
+      .list-group-item.complete .complete-btn {
+        color: green;
+      }
+
+      .list-group-item form {
+        display: inline-block;
+      }
+
+      .list-group-item button {
+        outline: none;
+        background: none;
+        border:none;
+        position: relative;
+        top: 8px;
+      }
+
+      .list-group-item:hover .delete-btn {
+        display: block;
+      }
+
+      .list-group-item .delete-btn {
+        position: absolute;
+        right: 10px;
+        top: 15px;
+        color: #f54747;
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
