@@ -36,14 +36,14 @@ class Trello:
 
         return response.json()
     
-    def add_item(self, title: str):
-        query = self.base_query | {
+    def add_item(self, to_add):
+        query = self.base_query | to_add | {
             'idList': self.todo_list,
-            'name': title
         }
 
         path = 'cards'
         requests.post(f'{self.base_url}/{path}', params=query)
+
 
     def update_item(self, id, item):
         query = self.base_query | item
