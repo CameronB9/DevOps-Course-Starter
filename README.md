@@ -47,6 +47,21 @@ After creating a Trello account, you also need to create a board which will be u
 TRELLO_BOARD_ID=trello-board-id
 ```
 
+Once you have created a board, create 2 different lists within the board. One called `To Do` and the other called `Completed`. Get the id of each list using the call below (this can be done with Postman):
+
+```
+https://api.trello.com/1/boards/[your-board-id]/lists?key=[your-api-key]&token=[your-api-token]
+```
+
+Update the `.env` file with the id of each list
+
+```bash
+TRELLO_TODO_LIST_ID=trello-todo-list-id
+TRELLO_COMPLETED_LIST_ID=trello-completed-list-id
+```
+
+
+
 ## Running the App
 
 Once the all dependencies have been installed, start the Flask app in development mode within the Poetry environment by running:
