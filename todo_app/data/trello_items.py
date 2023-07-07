@@ -2,6 +2,7 @@ import requests
 from typing import TypedDict
 
 from todo_app.utils import get_trello_credentials
+from todo_app.data.item import Item
 
 
 class Trello:
@@ -21,25 +22,16 @@ class Trello:
         response = requests.get(f'{self.base_url}/{path}', params=query).json()
 
         cards = [
-            {
-                'id': card['id'],
-                'title': card['name'],
-                'status': list['name'],
-                'status_id': list['id']
-            }
+            Item.from_trello_card(card, list)
                 for list in response
                     for card in list['cards']
         ]
-
         return cards
 
     def get_item(self, id: str):
-        query = self.base_query | {
-        }
-
         path = f'cards/{id}'
 
-        response = requests.get(f'{self.base_url}/{path}', params=query)
+        response = requests.get(f'{self.base_url}/{path}', params=self.base_query)
         print(response)
 
         return response.json()
@@ -59,3 +51,8 @@ class Trello:
         path = f'cards/{id}'
 
         requests.put(f'{self.base_url}/{path}', params=query)
+    
+    def delete_item(self, id):
+        path = f'cards/{id}'
+
+        requests.delete(f'{self.base_url}/{path}', params=self.base_query)

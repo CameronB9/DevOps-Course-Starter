@@ -1,5 +1,4 @@
 from flask import Flask, redirect, render_template, request
-from todo_app.data.session_items import get_items, get_item, add_item, save_item, delete_item
 from todo_app.data.trello_items import Trello
 from todo_app.utils import get_trello_credentials
 
@@ -16,7 +15,7 @@ def index():
 
     todo_items = trello.get_items()
     num_todos = len(todo_items)
-    num_complete_todos = len([item for item in todo_items if item['status'] == 'Completed'])
+    num_complete_todos = len([item for item in todo_items if item.status == 'Completed'])
     return render_template(
         'index.html', 
         todo_items = todo_items,
@@ -46,20 +45,14 @@ def change_todo_status(id):
     else:
         new_list = credentials['todo_list']
 
-
     to_update = {
         'idList': new_list
     }
-
-
-
     trello.update_item(id, to_update)
-
     return redirect('/')
 
 @app.route('/todo/delete/<id>', methods=['POST'])
 def delete_todo(id):
-    todo_item = get_item(id)
-    delete_item(todo_item)
-
+    trello = Trello()
+    trello.delete_item(id)
     return redirect('/')
