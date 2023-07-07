@@ -1,10 +1,12 @@
 from flask import Flask, redirect, render_template, request
+from datetime import datetime
+
 from todo_app.data.trello_items import Trello
 from todo_app.utils import get_trello_credentials
 
 from todo_app.flask_config import Config
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='')
 app.config.from_object(Config())
 
 
@@ -25,10 +27,25 @@ def index():
 
 @app.route('/todo/add', methods=['POST'])
 def add_todo():
-    new_todo = request.form.get('new-todo-item')
-    if new_todo.strip() != '':
+    name = request.form.get('todo-name')
+    description = request.form.get('todo-description')
+    date = request.form.get('todo-due-date')
+
+    if name.strip() != '':
+
+        to_add = {
+            'name': name,
+        }
+
+        if description.strip() != '':
+            to_add['desc'] = description
+        
+        if date.strip() != '':
+            to_add['due'] = datetime.strptime(date, '%d/%m/%Y').isoformat()
+        
+
         trello = Trello()
-        trello.add_item(new_todo)
+        trello.add_item(to_add)
     return redirect('/')
 
 @app.route('/todo/change-status/<id>', methods=['POST'])
