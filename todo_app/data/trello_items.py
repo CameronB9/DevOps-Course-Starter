@@ -1,5 +1,5 @@
 import requests
-from typing import TypedDict
+from datetime import datetime
 
 from todo_app.utils import get_trello_credentials
 from todo_app.data.item import Item
@@ -27,6 +27,20 @@ class Trello:
                     for card in list['cards']
         ]
         return cards
+
+    # Get the list of todo items sorted by status, due_date
+    def get_items_sorted(self):
+        todo_items = self.get_items()
+        date_format = '%d/%m/%Y'
+        completed_todos = [item for item in todo_items if item.status == 'Completed']
+        # lambda to sort todo item by date, if a date doesn't exist a default future date is used
+        sort_by_date = lambda x: datetime.strptime('01/01/2100', date_format) if x.due_date is None else datetime.strptime(x.due_date, date_format)
+
+        sorted_todo_items = sorted([item for item in todo_items if item.status != 'Completed'], key = sort_by_date, reverse=False)
+        sorted_completed_items = sorted(completed_todos, key = sort_by_date, reverse=False)
+
+        # combine the 2 sorted lists
+        return sorted_todo_items + sorted_completed_items
 
     def get_item(self, id: str):
         path = f'cards/{id}'

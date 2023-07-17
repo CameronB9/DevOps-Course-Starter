@@ -15,9 +15,10 @@ def index():
 
     trello = Trello()
 
-    todo_items = trello.get_items()
+    todo_items = trello.get_items_sorted()
     num_todos = len(todo_items)
     num_complete_todos = len([item for item in todo_items if item.status == 'Completed'])
+
     return render_template(
         'index.html', 
         todo_items = todo_items,

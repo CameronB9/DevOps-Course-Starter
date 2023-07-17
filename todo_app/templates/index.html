@@ -90,8 +90,15 @@
 								</span>
 							</button>
 						</form>
-						<h6 class="d-inline-block">{{ item.name }}</h6>
-						{% if item.description != '' %}
+						<h6 class="d-inline-block">
+							{{ item.name }}
+							{% if item.due_date %}
+								<span class="due-date">
+									{{ item.due_date }}
+								</span>
+							{% endif %}
+						</h6>
+						{% if item.description %}
 							<p class="mb-0 pl-2 text-secondary">{{ item.description }}</p>
 						{% endif %}
 						<form method="post" action="/todo/delete/{{ item.id }}" id="delete-form">
