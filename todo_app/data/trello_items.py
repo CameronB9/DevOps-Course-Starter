@@ -46,7 +46,6 @@ class Trello:
         path = f'cards/{id}'
 
         response = requests.get(f'{self.base_url}/{path}', params=self.base_query)
-        print(response)
 
         return response.json()
     
