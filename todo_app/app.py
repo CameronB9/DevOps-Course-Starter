@@ -3,6 +3,7 @@ from datetime import datetime
 
 from todo_app.data.trello_items import Trello
 from todo_app.utils import get_trello_credentials
+from todo_app.view_models.index_view_model import ViewModel
 
 from todo_app.flask_config import Config
 
@@ -16,14 +17,12 @@ def index():
     trello = Trello()
 
     todo_items = trello.get_items_sorted()
-    num_todos = len(todo_items)
-    num_complete_todos = len([item for item in todo_items if item.status == 'Completed'])
+
+    item_view_model = ViewModel(todo_items)
 
     return render_template(
         'index.html', 
-        todo_items = todo_items,
-        num_todos = num_todos,
-        num_complete_todos = num_complete_todos
+        view_model = item_view_model
     )
 
 @app.route('/todo/add', methods=['POST'])

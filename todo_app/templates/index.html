@@ -63,30 +63,20 @@
 			<h2>
 				Items
 				<span class="badge badge-primary">
-					{{ num_todos }}
+					{{ view_model.num_items }}
 				</span>
 			</h2>
 			<p>
-				{% if num_todos == 0 %}
-					Nothing here yet!
-				{% elif num_complete_todos == num_todos %}
-					Everything is complete, you can relax for now!
-				{% else %}
-					What are you waiting for, there's {{ num_todos - num_complete_todos }} left!
-				{% endif %} 
+				{{ view_model.item_status_message }}
 			</p>
 			<ul class="list-group mb-4">
 				<!-- List the todo items here -->
-				{% for item in todo_items %}
+				{% for item in view_model.items %}
 					<li class="list-group-item {{ 'complete' if item.status == 'Completed' else '' }}">
 						<form method="post" action="/todo/change-status/{{ item.id }}">
 							<button>
 								<span class="material-icons complete-btn">
-									{% if item.status == 'Completed' %}
-										check_box
-									{% else %}
-										check_box_outline_blank
-									{% endif %}
+									{{ view_model.render_checkbox_icon(item) }}
 								</span>
 							</button>
 						</form>
