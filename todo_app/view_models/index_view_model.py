@@ -1,5 +1,7 @@
 from typing import List
+
 from todo_app.data.item import Item
+from todo_app.data.item_lists import ItemLists
 
 class ViewModel:
     def __init__(self, items: List[Item]):
@@ -8,6 +10,21 @@ class ViewModel:
     @property
     def items(self) -> List[Item]:
         return self._items
+
+    @property
+    def todo_items(self) -> List[Item]:
+        return [item for item in self.items if item.status == 'To Do']
+
+    @property
+    def completed_items(self) -> List[Item]:
+        return [item for item in self.items if item.status == 'Completed']
+
+    @property
+    def item_lists(self) -> List[ItemLists]:
+        return [
+            ItemLists('To Do', self.todo_items), 
+            ItemLists('Completed', self.completed_items)
+        ]
     
     @property
     def num_items(self) -> int:

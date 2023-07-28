@@ -69,38 +69,45 @@
 			<p>
 				{{ view_model.item_status_message }}
 			</p>
-			<ul class="list-group mb-4">
-				<!-- List the todo items here -->
-				{% for item in view_model.items %}
-					<li class="list-group-item {{ 'complete' if item.status == 'Completed' else '' }}">
-						<form method="post" action="/todo/change-status/{{ item.id }}">
-							<button>
-								<span class="material-icons complete-btn">
-									{{ view_model.render_checkbox_icon(item) }}
-								</span>
-							</button>
-						</form>
-						<h6 class="d-inline-block">
-							{{ item.name }}
-							{% if item.due_date %}
-								<span class="due-date">
-									{{ item.due_date }}
-								</span>
-							{% endif %}
-						</h6>
-						{% if item.description %}
-							<p class="mb-0 pl-2 text-secondary">{{ item.description }}</p>
-						{% endif %}
-						<form method="post" action="/todo/delete/{{ item.id }}" id="delete-form">
-							<button class="delete-btn" title="Delete: {{ item.name }}">
-								<span class="material-icons">
-									delete
-								</span>
-							</button>
-						</form>
-					</li>
-				{% endfor %}
-			</ul>
+				<div class="row">
+					<!-- List the todo items here -->
+					{% for list in view_model.item_lists %}
+						<div class="col-xl-6">
+							<h5>{{ list.name }}</h5>
+							<ul class="list-group mb-4">
+								{% for item in list.items %}
+									<li class="list-group-item {{ 'complete' if item.status == 'Completed' else '' }}">
+										<form method="post" action="/todo/change-status/{{ item.id }}">
+											<button>
+												<span class="material-icons complete-btn">
+													{{ view_model.render_checkbox_icon(item) }}
+												</span>
+											</button>
+										</form>
+										<h6 class="d-inline-block">
+											{{ item.name }}
+											{% if item.due_date %}
+												<span class="due-date">
+													{{ item.due_date }}
+												</span>
+											{% endif %}
+										</h6>
+										{% if item.description %}
+											<p class="mb-0 pl-2 text-secondary">{{ item.description }}</p>
+										{% endif %}
+										<form method="post" action="/todo/delete/{{ item.id }}" id="delete-form">
+											<button class="delete-btn" title="Delete: {{ item.name }}">
+												<span class="material-icons">
+													delete
+												</span>
+											</button>
+										</form>
+									</li>
+								{% endfor %}
+							</ul>
+						</div>
+					{% endfor %}
+				</div>
 		</div>
 	</div>
 {% endblock %}
