@@ -55,7 +55,7 @@
 						</div>
 					</div>
 					<div class="">
-						<button class="btn btn-primary" type="submit">Add Todo</button>
+						<button class="btn btn-primary" id="add-todo" type="submit">Add Todo</button>
 					</div>
 				</div>
 			</form>
@@ -78,7 +78,7 @@
 								{% for item in list.items %}
 									<li class="list-group-item {{ 'complete' if item.status == 'Completed' else '' }}">
 										<form method="post" action="/todo/change-status/{{ item.id }}">
-											<button>
+											<button title="Mark {{ item.name }} as {{ 'Completed' if item.status == 'To Do' else 'To Do' }}">
 												<span class="material-icons complete-btn">
 													{{ view_model.render_checkbox_icon(item) }}
 												</span>
