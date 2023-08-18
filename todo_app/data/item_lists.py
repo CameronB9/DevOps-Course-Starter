@@ -16,7 +16,7 @@ class ItemLists:
     def items(self) -> List[Item]:
         #return self._items
         items = [ItemList(self._items)]
-        if self.hidden_items is not None:
+        if self.hidden_items is not None and len(self.hidden_items) > 0:
             items.append(ItemList(self.hidden_items, True))
 
         return items

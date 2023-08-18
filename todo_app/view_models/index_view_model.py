@@ -59,12 +59,12 @@ class ViewModel:
     @property
     def recent_done_items(self):
         today = datetime.date(datetime.now()).strftime('%d/%m/%Y')
-        return [item for item in self.items if item.modified_date == today ]
+        return [item for item in self.completed_items if item.modified_date == today ]
 
     @property
     def older_done_items(self):
         today = datetime.date(datetime.now()).strftime('%d/%m/%Y')
-        return [item for item in self.items if item.modified_date != today ]
+        return [item for item in self.completed_items if item.modified_date != today ]
 
     def render_checkbox_icon(self, item: Item) -> str:
         if item.status == 'Completed':

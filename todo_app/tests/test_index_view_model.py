@@ -108,7 +108,9 @@ def test_should_show_all_done_items_returns_the_correct_bool(mock_data, expected
 
     assert expected == result
 
-def test_recent_done_items_returns_correct_result(view_model: ViewModel):
+def test_recent_done_items_returns_correct_result():
+    mock_data = generate_mock_data(15, 5, 10)
+    view_model = ViewModel(mock_data)
     assert len(view_model.recent_done_items) == 5
 
 def test_older_done_items_returns_correct_result(view_model: ViewModel):

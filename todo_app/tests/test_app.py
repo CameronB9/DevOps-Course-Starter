@@ -8,10 +8,18 @@ from todo_app import app
 
 TRELLO_BASE_URL = 'https://api.trello.com/1'
 
+@pytest.fixture(scope='module')
+def vcr_config():
+    return {
+        'filter_query_parameters': [
+            ('key', 'API-KEY'),
+            ('token', 'API-TOKEN')
+        ]
+    }
+
 @pytest.fixture
 def client():
-    # Use our test integration config instead of the 'real' version
-    file_path = find_dotenv('.env.test')
+    file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
 
     # Create the new app.
@@ -34,22 +42,7 @@ def stub(url, params = {}):
 
     fake_response_data = None
 
-    if url == f'{TRELLO_BASE_URL}/boards/{test_board_id}/lists':
-        fake_response_data = [{
-            'id': '123abc',
-            'name': 'To Do',
-            'idList': '1',
-            'cards': [
-                {
-                    'id': '456', 
-                    'name': 'Test card', 
-                    'desc': 'Test Desc',
-                    'dateLastActivity': '2023-08-04',
-                    'due': '2023-08-04'
-                }
-            ]
-        }]
-    elif url == f'{TRELLO_BASE_URL}/cards':
+    if url == f'{TRELLO_BASE_URL}/cards':
         fake_response_data = []
     elif url == f'{TRELLO_BASE_URL}/cards/abc':
         fake_response_data = { 'idList': '1' }
@@ -59,14 +52,18 @@ def stub(url, params = {}):
 
     return StubResponse(fake_response_data)
 
-
-def test_index_page(monkeypatch, client: FlaskClient):
-    monkeypatch.setattr(requests, 'get', stub)
+@pytest.mark.vcr()
+def test_index_page(client: FlaskClient):
+    file_path = find_dotenv('.env')
+    load_dotenv(file_path, override=True)
     response = client.get('/')
     decoded_response = response.data.decode()
-    assert 'Test card' in decoded_response
-    assert 'Test Desc' in decoded_response
-    assert '04/08/2023' in decoded_response
+    assert 'To Do' in decoded_response
+    assert 'Completed' in decoded_response
+
+    for i in range(5):
+        assert f'To Do Item {i + 1}' in decoded_response
+        assert f'Completed Item {i + 1}' in decoded_response
 
 def test_add_todo(monkeypatch, client: FlaskClient):
     monkeypatch.setattr(requests, 'post', stub)
