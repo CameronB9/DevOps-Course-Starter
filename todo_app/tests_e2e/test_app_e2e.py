@@ -37,7 +37,7 @@ def app_with_temp_board():
     yield application
 
     thread.join(1)
-    trello_setup.delete_board()
+    trello_setup.delete_board(board_id)
 
 
 @pytest.fixture(scope="module")

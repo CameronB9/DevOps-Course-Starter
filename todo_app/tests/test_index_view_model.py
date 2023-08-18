@@ -1,11 +1,15 @@
 from todo_app.data.item import Item
 from todo_app.view_models.index_view_model import ViewModel
+from datetime import datetime, timedelta
 
 from typing import List
 
 import pytest
 
-def generate_mock_data():
+def generate_mock_data(items = 10, num_todo = 5, modified_today = 5):
+
+    today = datetime.now().strftime('%Y-%m-%d')
+    yesterday = (datetime.now() - timedelta(days = 1)).strftime('%Y-%m-%d')
 
     mock_items = [
         (
@@ -13,9 +17,10 @@ def generate_mock_data():
             f'Item {i + 1}', 
             f'Item {i + 1} Description', 
             None, 
-            'To Do' if i < 5 else 'Completed'
+            today if i < modified_today else str(yesterday),
+            'To Do' if i < num_todo else 'Completed'
         )
-            for i in range(10)
+            for i in range(items)
     ]
 
     return [Item(*item) for item in mock_items]
@@ -90,3 +95,21 @@ def test_render_checkbox_icon_returns_the_correct_string(
     result = view_model.render_checkbox_icon(selected_item)
 
     assert expected == result
+
+should_show_all_test_params = [
+    (generate_mock_data(10, 7), True),
+    (generate_mock_data(10, 2), False),
+]
+
+@pytest.mark.parametrize('mock_data, expected', should_show_all_test_params)
+def test_should_show_all_done_items_returns_the_correct_bool(mock_data, expected):
+    view_model = ViewModel(mock_data)
+    result = view_model.should_show_all_done_items
+
+    assert expected == result
+
+def test_recent_done_items_returns_correct_result(view_model: ViewModel):
+    assert len(view_model.recent_done_items) == 5
+
+def test_older_done_items_returns_correct_result(view_model: ViewModel):
+    assert len(view_model.older_done_items) == 5

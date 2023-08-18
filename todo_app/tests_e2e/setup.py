@@ -10,7 +10,6 @@ class TrelloSetup:
         trello_credentials = get_trello_credentials()
         self.base_url = 'https://api.trello.com/1'
         self.base_query = trello_credentials['secrets']
-        self.board_id = None
 
 
     def create_board(self):
@@ -32,6 +31,6 @@ class TrelloSetup:
         response = requests.post(f'{self.base_url}/{path}', params=query)
         return response.json()['id']
 
-    def delete_board(self):
-        path = f'boards/{self.board_id}'
+    def delete_board(self, board_id: str):
+        path = f'boards/{board_id}'
         requests.delete(f'{self.base_url}/{path}', params=self.base_query)

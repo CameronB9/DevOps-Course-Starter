@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 from todo_app.data.item import Item
 from todo_app.data.item_lists import ItemLists
@@ -21,9 +22,16 @@ class ViewModel:
 
     @property
     def item_lists(self) -> List[ItemLists]:
+
+        hidden_items = None
+        completed_items = self.completed_items
+
+        if self.should_show_all_done_items == False:
+            completed_items = self.recent_done_items
+            hidden_items = self.older_done_items
         return [
             ItemLists('To Do', self.todo_items), 
-            ItemLists('Completed', self.completed_items)
+            ItemLists('Completed', completed_items, hidden_items)
         ]
     
     @property
@@ -44,6 +52,20 @@ class ViewModel:
         else:
             return f"What are you waiting for, there's {self.num_items - self.num_completed_items } left!"
     
+    @property
+    def should_show_all_done_items(self) -> bool:
+        return True if self.num_completed_items < 5 else False
+
+    @property
+    def recent_done_items(self):
+        today = datetime.date(datetime.now()).strftime('%d/%m/%Y')
+        return [item for item in self.items if item.modified_date == today ]
+
+    @property
+    def older_done_items(self):
+        today = datetime.date(datetime.now()).strftime('%d/%m/%Y')
+        return [item for item in self.items if item.modified_date != today ]
+
     def render_checkbox_icon(self, item: Item) -> str:
         if item.status == 'Completed':
             return 'check_box'

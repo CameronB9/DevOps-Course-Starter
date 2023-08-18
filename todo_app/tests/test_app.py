@@ -44,6 +44,7 @@ def stub(url, params = {}):
                     'id': '456', 
                     'name': 'Test card', 
                     'desc': 'Test Desc',
+                    'dateLastActivity': '2023-08-04',
                     'due': '2023-08-04'
                 }
             ]
