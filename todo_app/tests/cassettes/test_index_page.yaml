@@ -1,0 +1,137 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.31.0
+    method: GET
+    uri: https://api.trello.com/1/boards/64a6cc72c3b16d0fd5ebf7b1/lists?cards=open&key=API-KEY&token=API-TOKEN
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAEA+ya33PaOBDH/5WOnwO2JEuW8pbQH9O5XHuXJjeXZPogSzJRYyMGm7RJp//7rQAb
+        k8kFjrtywPBmOav17kr7sfwlN98Dq4PjgMWSKZXgOOaIUJzSSGYGcREcBQNZGLC4cK9eOxiq3JUG
+        pmQyL80RzD51ctR2oUiKmI4yTU2aJSmCOUNXBsfoKCjHaalGNm3NL11WndnCVsHxYJznYFPJagzm
+        05EC3zC4acLUGTMRShJESUwZy1KaKBXDM1Kp+wZMvweyqqS6LcygKk8fLh6GEP33oBqZPHf+Kp3G
+        G0Eqk8CjHz+OgtwpWVk3aPK6d5X3Blb31ny1g/6vpkjN6A+4PU/+mXwy10/H/UcomK/VrVF37ytT
+        TD3Nhz3/B+/IR9EYvZGj3Jqyej2GkGf5u2KSyMSyldhkrI2v5nAhbj2fC5c9VwxzU4G72XJBdUez
+        UkPWzaM/QdF9ujef4ebiAj/nRYP1mSyrE1XZe1s9QLY4wqQT8Q7iF4gcI3SMRRdW6Rqq4MOc1sNf
+        vZaV9MtgCvfFwoWv/mLQ56awA21GdQ1MIW1eD1bab1ZPCpzbspolZfUZDCCKFza61dM1bqbMhrM1
+        97Wx+tOt8wXksHBWnzQ7refu5wHnMjV54+WsNSrkYCzzifF8brM47U575bfNq6Z5GKWEQnP4p5/Z
+        wR1kcqnfoPOefg8Vnty+HEGRgtuqGpbHYTjd713lilCFbdP5Bni2H8fLvYQ86lSuo13HQowdH6Oa
+        pu+7tJ1XvYdz1yym1ZfD3Elt9KlUd/2RGw+gDWatbx89aQZuVMgcvKYj27+tBqaEWgZaju7gntW/
+        5eO+hUb1c2Dv2PLCwCaHHdnU0ff1uctnTfTjaBEeMWPCaBHHRgpElTnAoyncYh/+j/AguIvw/sID
+        XoXtRvlJ8MDQLtM3L0FR4l+/LXp8OXcn78fuC9gso0fbdH161F5Cjtr08EHuEj0YpoKbVChEE6E0
+        9vQ7HD0mR8HtoUfcZYTt7dEDb4QeBDb2lB6CsShZpMeD/aav0quPYLOMHm3T9elRewk5btPDB7lL
+        9OAJzkjCqaL+GyYSFOI/0GPL6MG6Cd9fepCN0MMfqif0wAyjGJ7ZPnv0en9qdPf2wwr0aJuuT4/a
+        S8hJmx4+yF2iR4oVkUIZyhkjGY+iAz1qXWN7zh6iS/D+0iPeCD38a3FCD4ITlohFejxU979f87fe
+        ZunZo2W6Pj3qB4Y8btPDB7DV9PjcUj6m6q5ORMxTEkcGo8xgDhnMNKf6W1/7pBYFwJUUt+lqwYr8
+        NwovioXUghOCiCAgSQsJcR0OStt1UIp5l0XbK9I8s9n/kcILcuvPEmmabluu8n74KKrzKE1h/y+j
+        Xdt0fdrVXkJOO6AeT34+0Dup9CImERKKSSUlTpVhB6V3+5ReGnUJFVur1fxbiLCNQeRFtfeeDr5m
+        ydg3wDKKtE3Xp0jtJeTsKUV2TPFFnPMoFZQlsREpVehAkS2kCO4mMdlbioD6uqGjyIuq7zujtT7h
+        dgWKtE3Xp0jtJeTJU4rsmPKLJDWCaayQYLHQGfXfXocPmu36oKFxNxb7+0HDN0YR/4r8W/W3iC6Z
+        vH4sV6BI23R9itReQs6fUsQHutUazuL/riClqVYko9gYGhOaHc4iW3gWgd+P9viLBtTYDZ1FXlSB
+        r5J34+EvuLcCRdqm61Ok9hJy8ZQiO6AEf/4LAAD//wMARy2PyukrAAA=
+    headers:
+      Access-Control-Allow-Headers:
+      - Authorization, Accept, Content-Type
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST, DELETE
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - x-rate-limit-api-key-interval-ms, x-rate-limit-api-key-max, x-rate-limit-api-key-remaining,
+        x-rate-limit-api-token-interval-ms, x-rate-limit-api-token-max, x-rate-limit-api-token-remaining
+      Atl-Traceid:
+      - 8561d5684900381f
+      Cache-Control:
+      - max-age=0, must-revalidate, no-cache, no-store
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 18 Aug 2023 13:12:12 GMT
+      Expect-Ct:
+      - max-age=0
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00
+      Nel:
+      - '{"failure_fraction": 0.001, "include_subdomains": true, "max_age": 600, "report_to":
+        "endpoint-1"}'
+      Pragma:
+      - no-cache
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints": [{"url": "https://dz8aopenkvv6s.cloudfront.net"}], "group":
+        "endpoint-1", "include_subdomains": true, "max_age": 600}'
+      Server:
+      - AtlassianEdge
+      Set-Cookie:
+      - dsc=ffe7abb8a8dea76d9aa11b0039ee9b6ff2fce636701425e74c67ae87dfb0509f; Path=/;
+        Expires=Fri, 01 Sep 2023 13:12:12 GMT; Secure; SameSite=None
+      - preAuthProps=s%3A64a6cc2679679932aa2096d0%3AisEnterpriseAdmin%3Dfalse.9iHImqCI%2BSEPFC5l2R9d0mDm%2FnEAecHXwymUgn%2Ft9gs;
+        Path=/; HttpOnly
+      Strict-Transport-Security:
+      - max-age=63072000; preload
+      Surrogate-Control:
+      - no-store
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Dns-Prefetch-Control:
+      - 'off'
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - DENY
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Rate-Limit-Api-Key-Interval-Ms:
+      - '10000'
+      X-Rate-Limit-Api-Key-Max:
+      - '300'
+      X-Rate-Limit-Api-Key-Remaining:
+      - '299'
+      X-Rate-Limit-Api-Token-Interval-Ms:
+      - '10000'
+      X-Rate-Limit-Api-Token-Max:
+      - '100'
+      X-Rate-Limit-Api-Token-Remaining:
+      - '99'
+      X-Rate-Limit-Db-Query-Time-Interval-Ms:
+      - '600000'
+      X-Rate-Limit-Db-Query-Time-Max:
+      - '7200000'
+      X-Rate-Limit-Db-Query-Time-Remaining:
+      - '7199990'
+      X-Rate-Limit-Member-Interval-Ms:
+      - '10000'
+      X-Rate-Limit-Member-Max:
+      - '375'
+      X-Rate-Limit-Member-Remaining:
+      - '374'
+      X-Server-Time:
+      - '1692364332868'
+      X-Trello-Actual-Fastget-Path:
+      - fast
+      X-Trello-Environment:
+      - Production
+      X-Trello-Version:
+      - 1.228559.0
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

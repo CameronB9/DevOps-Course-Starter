@@ -80,3 +80,29 @@ You should see output similar to the following:
  * Debugger PIN: 226-556-590
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
+
+## Testing
+
+### Running Tests
+
+The app uses the `pytest` testing framework, it's listed as a dependency and will be installed when running `poetry install`. To run the tests, run the following command from the root folder:
+
+```bash
+pytest
+```
+
+You can run tests in a specific directory by passing the directory as an argument:
+
+```bash
+pytest testing/
+```
+
+You can also run tests in a specific file:
+
+```bash
+pytest todo_app/view_models/test_index_view_model.py
+```
+
+### Adding additional tests
+
+You can add more tests by creating an new file with the name test_*.py. Tests should also be prefixed test_*. For more on the test discovery rules, check out [the pytest docs](https://docs.pytest.org/en/stable/explanation/goodpractices.html#conventions-for-python-test-discovery).
