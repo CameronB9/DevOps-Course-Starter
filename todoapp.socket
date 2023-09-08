@@ -1,4 +1,2 @@
 [Socket]
-User=todoapp
-Group=todoapp
 ListenStream=80
