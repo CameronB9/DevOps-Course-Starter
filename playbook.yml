@@ -1,0 +1,85 @@
+- name: Deploy app to webservers
+  hosts: webservers
+  remote_user: ec2-user
+  tasks:
+    - name: include vault
+      ansible.builtin.include_vars:
+        file: secrets.yml
+
+    - name: Create todoapp user
+      ansible.builtin.user:
+        name: todoapp
+      become: yes
+
+    - name: Install git
+      ansible.builtin.yum:
+        name: git
+        state: installed
+      become: yes
+
+    - name: Check python3 version
+      ansible.builtin.command:
+        cmd: python3 --version
+      register: python_version_output
+
+    - name: Copy python3 installation script
+      ansible.builtin.copy:
+        src: ~/module_4/install_python.sh
+        dest: ~/
+      when: "python_version_output['stdout'] != 'Python 3.10.2'"
+
+
+    - name: Run python installation script
+      ansible.builtin.command:
+        cmd: bash /home/ec2-user/install_python.sh
+      become: yes
+      when: "python_version_output['stdout'] != 'Python 3.10.2'"
+
+    - name: Install Poetry
+      ansible.builtin.shell:
+        cmd: curl -sSL https://install.python-poetry.org | POETRY_HOME=/home/todoapp python3 - --version 1.5.1
+      become: yes
+
+    - name: Create To-Do app directory
+      ansible.builtin.file:
+        path: /opt/todoapp/
+        state: directory
+        owner: ec2-user
+      become: yes
+
+    - name: Checkout latest todo app code
+      ansible.builtin.git:
+        dest: /opt/todoapp/
+        repo: https://github.com/CameronB9/DevOps-Course-Starter.git
+        version: exercise--4
+
+    - name: Install todo app dependencies
+      ansible.builtin.command:
+        cmd: ~/.local/bin/poetry install
+        chdir: /opt/todoapp/
+
+    - name: Create .env file
+      ansible.builtin.template:
+        src: /home/ec2-user/.env.j2
+        dest: /opt/todoapp/.env
+      become: yes
+    
+    - name: Copy todoapp service
+      ansible.builtin.copy:
+        src: ~/todoapp.service
+        dest: /etc/systemd/system/
+        group: todoapp
+      become: yes
+    
+    - name: Copy todoapp socket
+      ansible.builtin.copy:
+        src: ~/todoapp.socket
+        dest: /etc/systemd/system/
+      become: yes
+      
+    - name: Start todoapp service
+      ansible.builtin.systemd:
+        name: todoapp
+        daemon_reload: true
+        state: restarted
+      become: yes
