@@ -1,0 +1,9 @@
+[Unit]
+Description=My To-Do App
+Requires=todoapp.socket
+After=todoapp.socket
+
+[Service]
+WorkingDirectory=/opt/todoapp/todo_app
+EnvironmentFile=/opt/todoapp/.env
+ExecStart=/home/todoapp/bin/poetry run gunicorn -w 4 -b 0.0.0.0:80 --access-logfile ../access.log --error-logfile ../error.log 'app:create_app()' 

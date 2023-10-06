@@ -106,3 +106,59 @@ pytest todo_app/view_models/test_index_view_model.py
 ### Adding additional tests
 
 You can add more tests by creating an new file with the name test_*.py. Tests should also be prefixed test_*. For more on the test discovery rules, check out [the pytest docs](https://docs.pytest.org/en/stable/explanation/goodpractices.html#conventions-for-python-test-discovery).
+
+
+## Deployment with Ansible
+
+Clone the repo to the control node:
+
+```bash
+git clone git@github.com:CameronB9/DevOps-Course-Starter.git
+```
+
+### Creating A Encrypted Vault
+
+Create a YAML file called `secrets.yml` to store our environment variables. Before creating the file, be sure to check out the Ansible Docs on [how to secure your editor](https://docs.ansible.com/ansible/latest/vault_guide/vault_encrypting_content.html#steps-to-secure-your-editor) to avoid accidentally exposing sensitive information. Copy the below code into the file and replace the place holders with your secrets:
+
+```yml
+secret_key: [your_secret_key]
+trello_api_key: [your_api_key]
+trello_secret: [your_trello_secret]
+trello_board_id: [your_board_id]
+trello_todo_list_id: [your_todo_list_id]
+trello_completed_list_id: [your_completed_list_id]
+~                                                              
+```
+
+After saving and closing the file, run the following command to encrypt your secrets:
+
+```bash
+ansible-vault encrypt secrets.yml
+```
+
+When prompted, enter and then confirm the password for the file. The password will be required when editing and running the playbook, be sure to keep it safe.
+
+### Editing The Encrypted Vault
+
+To edit the vault, run the following command:
+
+```
+ansible-vault edit secrets.yml
+```
+
+This will open the file in vim and allow you to edit it. After exiting and saving, the file will be encrypted.
+
+### Running The Ansible Playbook
+
+Before running the playbook, check the `inventory.ini` file to ensure you run the playbook on the required servers. To run the playbook, run the following command:
+
+```bash
+ansible-playbook playbook.yml -i inventory.ini --ask-vault-pass
+```
+
+Enter your vault password when prompted. Ensure that the `--ask-vault-pass` flag is passed otherwise, the playbook will fail.
+
+### Testing deployment
+The Todo app should now be running on each of the servers listed within the `[webservers]` group in the `inventory.ini` file. Open the app within a browser:
+
+`http://[server-ip-address]:80`
