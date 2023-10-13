@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 from todo_app import app
-from setup import TrelloSetup
+from todo_app.tests_e2e.setup import TrelloSetup
 
 
 
@@ -42,7 +42,11 @@ def app_with_temp_board():
 
 @pytest.fixture(scope="module")
 def driver():
-    with webdriver.Chrome() as driver:
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    with webdriver.Chrome(options=options) as driver:
         yield driver
 
 def test_task_journey(driver: WebDriver, app_with_temp_board):

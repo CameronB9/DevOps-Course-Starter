@@ -1,0 +1,11 @@
+services:
+  production:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: production
+    image: todo-app:prod
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
