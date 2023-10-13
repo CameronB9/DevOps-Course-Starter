@@ -17,7 +17,7 @@ services:
       context: .
       target: test
     image: todo-app:tests
-    command: todo_app/tests > /app/test.log
+    command: --ignore todo_app/tests_e2e
     env_file:
       - .env.test
     volumes:
@@ -28,7 +28,7 @@ services:
       context: .
       target: test
     image: todo-app:tests-e2e
-    command: todo_app/tests_e2e
+    command: --ignore todo_app/tests
     env_file:
       - .env
     volumes:

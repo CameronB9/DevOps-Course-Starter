@@ -182,6 +182,18 @@ The development environment runs the application and tests. The tests will run e
 docker-compose -f docker-compose.dev.yml up --build
 ```
 
+by default, the development environment will run flask in debug mode, tests and e2e tests. You can chose specific services by passing additional arguments to the up command. For example, if you only want to run flask, run the below command:
+
+```bash
+docker-compose -f docker-compose.dev.yml up dev
+```
+
+To run flask and tests run the below command:
+
+```bash
+docker-compose -f docker-compose.dev.yml up dev test
+```
+
 ### Debug code running in container
 For this you will need to install the following VSCode Extensions:
 
