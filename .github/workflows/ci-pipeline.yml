@@ -7,4 +7,4 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - run: docker-compose -f docker-compose.test-ci.yml up
+            - run: docker-compose -f docker-compose.test-ci.yml up test-ci
