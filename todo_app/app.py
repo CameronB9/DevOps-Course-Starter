@@ -75,11 +75,9 @@ def create_app():
         trello = Trello()
         trello.delete_item(id)
         return redirect('/')
-    
     return app
 
 file = __file__
-
-#if __name__ == 'todo_app.app':
-    #create_app()
+if __name__ == 'todo_app.app':
+    create_app()
 

@@ -19,7 +19,7 @@ def vcr_config():
 
 @pytest.fixture
 def client():
-    file_path = find_dotenv('.env')
+    file_path = find_dotenv('.env.test')
     load_dotenv(file_path, override=True)
 
     # Create the new app.
@@ -54,8 +54,6 @@ def stub(url, params = {}):
 
 @pytest.mark.vcr()
 def test_index_page(client: FlaskClient):
-    file_path = find_dotenv('.env')
-    load_dotenv(file_path, override=True)
     response = client.get('/')
     decoded_response = response.data.decode()
     assert 'To Do' in decoded_response

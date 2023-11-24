@@ -69,7 +69,7 @@ Once the all dependencies have been installed, start the Flask app in developmen
 $ poetry run flask run
 ```
 
-You should see output similar to the following:
+The app should be running on port 5000. You should see output similar to the following:
 ```bash
  * Serving Flask app "app" (lazy loading)
  * Environment: development
@@ -162,3 +162,59 @@ Enter your vault password when prompted. Ensure that the `--ask-vault-pass` flag
 The Todo app should now be running on each of the servers listed within the `[webservers]` group in the `inventory.ini` file. Open the app within a browser:
 
 `http://[server-ip-address]:80`
+
+## Docker
+
+To run the app in Docker, make sure you have [Docker Desktop](https://docs.docker.com/desktop/wsl/) installed and running. 
+
+### Creating a production-ready container image
+From the root directory of the repo, run the following command:
+
+```bash
+docker-compose -f docker-compose.prod.yml up --build
+```
+After running for the first time, you can omit build to skip the build stage.
+
+### Running the development environment
+The development environment runs the application and tests. The tests will run every time a file change is detected. The Flask server will also restart when changes are detected.
+
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+by default, the development environment will run flask in debug mode, tests and e2e tests. The app should run on port 5000. You can chose specific services by passing additional arguments to the up command. For example, if you only want to run flask, run the below command:
+
+```bash
+docker-compose -f docker-compose.dev.yml up dev
+```
+
+To run flask and tests run the below command:
+
+```bash
+docker-compose -f docker-compose.dev.yml up dev test
+```
+
+### Debug code running in container
+For this you will need to install the following VSCode Extensions:
+
+- VSCode Docker Extension
+- VSCode Remote Development
+
+The following command will run a special debug image:
+
+```bash
+docker-compose -f docker-compose.debug.yml up --build
+```
+
+The command will start the container but will not run Flask. To run the app in debug mode, follow these steps:
+
+1. Run the compose command outlined above
+2. Click on the Docker tab in VSCode
+3. Find the `todo-app:debug` container under containers (it will have a green play button next to it)
+4. Right click the correct container and select attach VSCode
+5. A new VSCode window will open. Click the `Run and Debug` tab
+6. Click the `Run and Debug` button
+7. Select Flask from dropdown menu that appears
+8. Type `todo_app/app.py` into the input box that appears
+
+ 
