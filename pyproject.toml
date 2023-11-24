@@ -6,15 +6,17 @@ authors = []
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Flask = "^2.2.5"
+Flask = "2.3.3"
 python-dotenv = "^0.14.0"
 requests = "^2.31.0"
 pytest = "^7.4.0"
-selenium = "^4.11.2"
+selenium = "^4.15.1"
 vcrpy = "^5.1.0"
 pytest-vcr = "^1.0.2"
 gunicorn = "^21.2.0"
 pytest-watch = "^4.2.0"
+certifi = "2023.7.22"
+urllib3 = "1.26.18"
 
 [tool.poetry.dev-dependencies]
 
