@@ -69,7 +69,7 @@ Once the all dependencies have been installed, start the Flask app in developmen
 $ poetry run flask run
 ```
 
-You should see output similar to the following:
+The app should be running on port 5000. You should see output similar to the following:
 ```bash
  * Serving Flask app "app" (lazy loading)
  * Environment: development
@@ -182,7 +182,7 @@ The development environment runs the application and tests. The tests will run e
 docker-compose -f docker-compose.dev.yml up --build
 ```
 
-by default, the development environment will run flask in debug mode, tests and e2e tests. You can chose specific services by passing additional arguments to the up command. For example, if you only want to run flask, run the below command:
+by default, the development environment will run flask in debug mode, tests and e2e tests. The app should run on port 5000. You can chose specific services by passing additional arguments to the up command. For example, if you only want to run flask, run the below command:
 
 ```bash
 docker-compose -f docker-compose.dev.yml up dev
