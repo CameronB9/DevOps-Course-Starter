@@ -7,4 +7,5 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - run: docker-compose -f docker-compose.test-ci.yml up test-ci
+            - run: docker-compose -f docker-compose.test-ci.yml run test-ci
+            - run: docker-compose -f docker-compose.test-ci.yml run -e SECRET_KEY=${{ secrets.SECRET_KEY }} -e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} -e TRELLO_SECRET=${{ secrets.TRELLO_SECRET }} -e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} -e TRELLO_TODO_LIST_ID=${{ secrets.TRELLO_TODO_LIST_ID }} -e TRELLO_COMPLETED_LIST_ID=${{ secrets.TRELLO_COMPLETED_LIST_ID }} e2e-ci

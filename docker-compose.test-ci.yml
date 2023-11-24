@@ -17,7 +17,5 @@ services:
       target: test-ci
     image: todo-app:tests-e2e
     command: --ignore todo_app/tests
-    env_file:
-      - .env
     volumes:
       - ./todo_app:/app/todo-app/todo_app
