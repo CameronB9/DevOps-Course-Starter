@@ -194,6 +194,30 @@ To run flask and tests run the below command:
 docker-compose -f docker-compose.dev.yml up dev test
 ```
 
+### Running tests in a container
+
+Unit and integration tests can be ran using the below command:
+
+```bash
+docker-compose -f docker-compose.test-ci.yml run test-ci
+```
+
+The docker-compose file was designed with CI in mind. The `.env` file is not available in the CI environment, the e2e tests need the real secrets to work properly. For the e2e tests to work, you need to supply the secrets from the `.env file` using the -e flag. Here's how it is used in the github action workflow:
+
+```bash
+docker-compose -f docker-compose.test-ci.yml run \
+-e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+-e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} \
+-e TRELLO_SECRET=${{ secrets.TRELLO_SECRET }} \
+-e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} \
+-e TRELLO_TODO_LIST_ID=${{ secrets.TRELLO_TODO_LIST_ID }} \
+-e TRELLO_COMPLETED_LIST_ID=${{ secrets.TRELLO_COMPLETED_LIST_ID }} \
+e2e-ci
+```
+
+Each secret is stored as a variable in the repo to avoid making the secrets public.
+
+
 ### Debug code running in container
 For this you will need to install the following VSCode Extensions:
 
