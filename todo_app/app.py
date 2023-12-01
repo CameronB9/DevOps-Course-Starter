@@ -77,7 +77,3 @@ def create_app():
         return redirect('/')
     return app
 
-file = __file__
-if __name__ == 'todo_app.app':
-    create_app()
-

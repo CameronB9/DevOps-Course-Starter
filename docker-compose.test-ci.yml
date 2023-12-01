@@ -1,35 +1,21 @@
 services:
-  dev:
+  test-ci:
     build:
       dockerfile: Dockerfile
       context: .
-      target: development
-    image: todo-app:dev
-    ports: 
-     - 5000:3001
-    env_file:
-      - .env
-    volumes:
-      - ./todo_app:/app/todo-app/todo_app
-  test:
-    build:
-      dockerfile: Dockerfile
-      context: .
-      target: test-dev
+      target: test-ci
     image: todo-app:tests
     command: --ignore todo_app/tests_e2e
     env_file:
       - .env.test
     volumes:
       - ./todo_app:/app/todo-app/todo_app
-  e2e:
+  e2e-ci:
     build:
       dockerfile: Dockerfile
       context: .
-      target: test-dev
+      target: test-ci
     image: todo-app:tests-e2e
     command: --ignore todo_app/tests
-    env_file:
-      - .env
     volumes:
       - ./todo_app:/app/todo-app/todo_app
