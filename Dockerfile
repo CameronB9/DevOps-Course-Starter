@@ -29,4 +29,4 @@ FROM test-dev as test-ci
 FROM base as production
     COPY / /app/todo-app/
     RUN poetry install
-    ENTRYPOINT ["poetry", "run", "gunicorn", "--bind", "0.0.0.0", "todo_app.app:create_app()"]
+    ENTRYPOINT ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:80", "todo_app.app:create_app()"]
