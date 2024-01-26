@@ -1,0 +1,64 @@
+name: Continuous Integration
+on:
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+      - '.env.template'
+      - '.env.j2'
+  push:    
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+      - '.env.template'
+      - '.env.j2'
+  schedule:
+    - cron: '08 13 * * *'
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run unit and integration tests
+        run: docker-compose -f docker-compose.test-ci.yml run test-ci
+        if: github.event.schedule != '08 13 * * *'
+      - name: Run e2e tests
+        run: | 
+          docker-compose -f docker-compose.test-ci.yml run \
+          -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+          -e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} \
+          -e TRELLO_SECRET=${{ secrets.TRELLO_SECRET }} \
+          -e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} \
+          -e TRELLO_TODO_LIST_ID=${{ secrets.TRELLO_TODO_LIST_ID }} \
+          -e TRELLO_COMPLETED_LIST_ID=${{ secrets.TRELLO_COMPLETED_LIST_ID }} \
+          e2e-ci
+        if: github.event.schedule != '08 13 * * *'
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python-3.10@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        if: ${{ always() }}
+      
