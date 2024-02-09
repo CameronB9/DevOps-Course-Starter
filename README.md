@@ -244,7 +244,7 @@ The command will start the container but will not run Flask. To run the app in d
 ## Deployment to Azure 
 
 The application is deployed through Azure App Service using Docker. New changes will need to be pushed to Docker Hub.
-
+The URL is : [https://cb-todo-app.azurewebsites.net/](https://cb-todo-app.azurewebsites.net/).
 ### Pushing image to Docker Hub
 The existing repo can be found on [Docker Hub](https://hub.docker.com/layers/cameronb9/todo-app/prod/images/sha256-0af45a7f075cdb5563052c378e19e048ae5fe3d620168dce73ca7b66818d4ac8?context=repo). First make sure you are logged into DockerHub locally:
 
