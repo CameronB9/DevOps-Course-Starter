@@ -1,3 +1,4 @@
+import os
 from flask import Flask, redirect, render_template, request
 from datetime import datetime
 
@@ -6,12 +7,16 @@ from todo_app.utils import get_trello_credentials
 from todo_app.view_models.index_view_model import ViewModel
 
 from todo_app.flask_config import Config
+from todo_app.kv_secrets import get_secrets
 
 
 def create_app():
     
     app = Flask(__name__, static_folder='static', static_url_path='')
     app.config.from_object(Config())
+
+    if os.environ["FLASK_ENV"] == "production":
+        get_secrets()
 
     @app.route('/')
     def index():

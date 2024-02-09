@@ -241,4 +241,35 @@ The command will start the container but will not run Flask. To run the app in d
 7. Select Flask from dropdown menu that appears
 8. Type `todo_app/app.py` into the input box that appears
 
- 
+## Deployment to Azure 
+
+The application is deployed through Azure App Service using Docker. New changes will need to be pushed to Docker Hub.
+The URL is : [https://cb-todo-app.azurewebsites.net/](https://cb-todo-app.azurewebsites.net/).
+### Pushing image to Docker Hub
+The existing repo can be found on [Docker Hub](https://hub.docker.com/layers/cameronb9/todo-app/prod/images/sha256-0af45a7f075cdb5563052c378e19e048ae5fe3d620168dce73ca7b66818d4ac8?context=repo). First make sure you are logged into DockerHub locally:
+
+```bash
+docker login
+```
+
+ After making changes to the application, build a new production Docker image using `docker-compose` from the project root directory:
+
+```bash
+docker-compose -f docker-compose.prod.yml build
+```
+
+This will create a new image with the image tag `todo-app:prod`. The updated image then needs to be pushed to DockerHub:
+
+```
+docker push cameronb9/todo-app:prod
+```
+
+### Updating the App Service Container
+
+The container can be updated by making a post request to the webhook URL. This will cause the app to restart and pull the latest version of the given container from DockerHub. The webhook URL can be found via the Azure Portal. Go to the app service page and then click on the `Deployment Center` tab. Enter the below command into a terminal to update the app:
+
+```bash
+curl -dH -X POST "https://\$<deployment_username>:<deployment_password>@<webapp_name>.scm.azurewebsites.net/docker/hook" 
+```
+
+The dollar sign will need to be escaped using a backslash: `\$`. The response to the curl command will contain a link to a log-stream.

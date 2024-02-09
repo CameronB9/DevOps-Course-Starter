@@ -27,6 +27,7 @@ jobs:
       - name: Run e2e tests
         run: | 
           docker-compose -f docker-compose.test-ci.yml run \
+          -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
           -e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} \
           -e TRELLO_SECRET=${{ secrets.TRELLO_SECRET }} \
