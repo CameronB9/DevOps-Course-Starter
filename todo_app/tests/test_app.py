@@ -60,7 +60,7 @@ def test_index_page(client: FlaskClient):
     assert 'Completed' in decoded_response
 
     for i in range(5):
-        assert f'To Do Item {i + 1}' in decoded_response
+        assert f'To Do Item {i + 11}' in decoded_response
         assert f'Completed Item {i + 1}' in decoded_response
 
 def test_add_todo(monkeypatch, client: FlaskClient):
