@@ -63,7 +63,7 @@ jobs:
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         if: ${{ always() }}
   publish:
-    name: Publish to Docker Hub
+    name: Publish to Docker Hub and deploy to Azure
     runs-on: ubuntu-latest
     needs: build
     steps:
