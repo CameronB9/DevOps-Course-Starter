@@ -81,6 +81,6 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/todo-app:prod
       -
         name: Publish to Azure
-        run: curl -dH -x POST '${{ secrets.AZURE_WEBHOOK_URL }}'
+        run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK_URL }}'
 
       
