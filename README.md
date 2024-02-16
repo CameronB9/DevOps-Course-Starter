@@ -241,7 +241,7 @@ The command will start the container but will not run Flask. To run the app in d
 7. Select Flask from dropdown menu that appears
 8. Type `todo_app/app.py` into the input box that appears
 
-## Deployment to Azure 
+## Deployment to Azure (Manually) 
 
 The application is deployed through Azure App Service using Docker. New changes will need to be pushed to Docker Hub.
 The URL is : [https://cb-todo-app.azurewebsites.net/](https://cb-todo-app.azurewebsites.net/).
@@ -273,3 +273,4 @@ curl -dH -X POST "https://\$<deployment_username>:<deployment_password>@<webapp_
 ```
 
 The dollar sign will need to be escaped using a backslash: `\$`. The response to the curl command will contain a link to a log-stream.
+
