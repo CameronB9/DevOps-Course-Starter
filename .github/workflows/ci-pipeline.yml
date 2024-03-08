@@ -80,6 +80,7 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/todo-app:prod
+          target: production
       -
         name: Publish to Azure
         run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK_URL }}'
