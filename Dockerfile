@@ -9,7 +9,6 @@ FROM base as development
     COPY pyproject.toml /app/todo-app/
     RUN poetry install
     ENTRYPOINT ["poetry", "run", "flask", "run"]
-
 FROM development as debug
     ENTRYPOINT [ "tail", "-f", "/dev/null" ]
 

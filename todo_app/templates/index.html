@@ -81,8 +81,8 @@
 										<summary>Completed more than a day ago</summary>
 									{% endif %}
 									{% for item in item_list.items %}
-										<li class="list-group-item {{ 'complete' if item.status == 'Completed' else '' }}">
-											<form method="post" action="/todo/change-status/{{ item.id }}">
+										<li class="list-group-item {{ 'complete' if item.is_done == True else '' }}">
+											<form method="post" action="/todo/change-status/{{ item._id }}">
 												<button title="Mark {{ item.name }} as {{ 'Completed' if item.status == 'To Do' else 'To Do' }}">
 													<span class="material-icons complete-btn">
 														{{ view_model.render_checkbox_icon(item) }}
@@ -100,7 +100,7 @@
 											{% if item.description %}
 												<p class="mb-0 pl-2 text-secondary">{{ item.description }}</p>
 											{% endif %}
-											<form method="post" action="/todo/delete/{{ item.id }}" id="delete-form">
+											<form method="post" action="/todo/delete/{{ item._id }}" id="delete-form">
 												<button class="delete-btn" title="Delete: {{ item.name }}">
 													<span class="material-icons">
 														delete
