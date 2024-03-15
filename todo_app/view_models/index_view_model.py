@@ -1,12 +1,11 @@
 from typing import List
 from datetime import datetime
 
-from todo_app.data.item import Item
 from todo_app.data.item_lists import ItemLists
 from todo_app.data.mongo_item import MongoItem
 
 class ViewModel:
-    def __init__(self, items: List[Item]):
+    def __init__(self, items: List[MongoItem]):
         self._items = items
 
     @property
@@ -59,8 +58,11 @@ class ViewModel:
 
     @property
     def recent_done_items(self):
-        today = datetime.date(datetime.now()).strftime('%d/%m/%Y')
-        return [item for item in self.completed_items if item.modified_date == today ]
+        today = datetime.date(datetime.now()).strftime('%Y-%m-%d')
+        return [
+            item 
+                for item in self.completed_items if item.modified_date == today 
+        ]
 
     @property
     def older_done_items(self):

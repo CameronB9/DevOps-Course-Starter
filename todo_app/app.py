@@ -2,8 +2,6 @@ import os
 from flask import Flask, redirect, render_template, request
 from datetime import datetime
 
-from todo_app.data.trello_items import Trello
-from todo_app.utils import get_trello_credentials
 from todo_app.view_models.index_view_model import ViewModel
 from todo_app.data.db import DB
 from todo_app.data.mongo_item import MongoItem
