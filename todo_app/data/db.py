@@ -17,7 +17,7 @@ def custom_sorting_key(doc):
 class DB:
     def __init__(self):
         self.client = pymongo.MongoClient(getenv('MONGO_CONNECTION_STRING'))
-        self.db = self.client['todo-db']
+        self.db = self.client[getenv('MONGO_DATABASE_NAME')]
         self.collection = self.db['todos']
 
     def get_items(self) -> List[MongoItem]:

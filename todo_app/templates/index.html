@@ -83,7 +83,7 @@
 									{% for item in item_list.items %}
 										<li class="list-group-item {{ 'complete' if item.is_done == True else '' }}">
 											<form method="post" action="/todo/change-status/{{ item._id }}">
-												<button title="Mark {{ item.name }} as {{ 'Completed' if item.status == 'To Do' else 'To Do' }}">
+												<button title="Mark {{ item.name }} as {{ 'Completed' if item.is_done == False else 'To Do' }}">
 													<span class="material-icons complete-btn">
 														{{ view_model.render_checkbox_icon(item) }}
 													</span>

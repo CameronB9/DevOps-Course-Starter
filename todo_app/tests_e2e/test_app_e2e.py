@@ -2,29 +2,29 @@ import os
 from time import sleep
 from threading import Thread
 from dotenv import load_dotenv, find_dotenv
+
+import pymongo
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 from todo_app import app
-from todo_app.tests_e2e.setup import TrelloSetup
+
+db_name = 'E2E_TEST_todo-db'
 
 
+def delete_db():
+    client = pymongo.MongoClient(os.getenv('MONGO_CONNECTION_STRING'))
+    client.drop_database(db_name)
 
 @pytest.fixture(scope='module')
-def app_with_temp_board():
+def app_with_temp_db():
 
     file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
 
-    trello_setup = TrelloSetup()
-    board_id = trello_setup.create_board()
-    os.environ['TRELLO_BOARD_ID'] = board_id
-    todo_list = trello_setup.create_list('To Do', board_id)
-    complete_list = trello_setup.create_list('Completed', board_id)
-    os.environ['TRELLO_TODO_LIST_ID'] = todo_list
-    os.environ['TRELLO_COMPLETED_LIST_ID'] = complete_list
+    os.environ['MONGO_DATABASE_NAME'] = db_name
 
 
     application = app.create_app()
@@ -37,7 +37,7 @@ def app_with_temp_board():
     yield application
 
     thread.join(1)
-    trello_setup.delete_board(board_id)
+    delete_db()
 
 
 @pytest.fixture(scope="module")
@@ -49,7 +49,7 @@ def driver():
     with webdriver.Chrome(options=options) as driver:
         yield driver
 
-def test_task_journey(driver: WebDriver, app_with_temp_board):
+def test_task_journey(driver: WebDriver, app_with_temp_db):
     driver.get('http://localhost:5000')
     assert driver.title == 'To-Do App'
 
@@ -74,8 +74,3 @@ def test_task_journey(driver: WebDriver, app_with_temp_board):
     todo_btn.click()
 
     assert "What are you waiting for, there's 1 left!" in driver.page_source
-
-
-
-
-
