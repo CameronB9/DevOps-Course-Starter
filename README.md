@@ -34,32 +34,12 @@ $ cp .env.template .env  # (first time only)
 
 The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/1.1.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
 
-The `.env` file also stores Trello credentials which are required to run the app. You will need a [Trello account](https://trello.com/signup) and API key. You can find instructions on how to do this [here](https://trello.com/app-key). Replace the following environment variables in your `.env` file:
+The `.env` file also stores Mongo DB credentials which are required to run the app. It is recommended to use the Mongo DB Comos DB in Azure. You can find instructions on how to do this [here](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/quickstart-dotnet?tabs=azure-cli&pivots=devcontainer-codespace). Replace the following environment variables in your `.env` file:
 
 ```bash
-TRELLO_API_KEY=trello-api-key
-TRELLO_SECRET=trello-secret
+MONGO_CONNECTION_STRING=[mongo-connection-string]
+MONGO_DATABASE_NAME=[db-name]
 ```
-
-After creating a Trello account, you also need to create a board which will be used to store the to do items. This can be done after signing into Trello. Once you've created a board, you can follow the instructions [here](https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/#your-first-api-call) to find the ID of the board you wish to use. Populate the following environment variable with your board ID:
-
-```bash
-TRELLO_BOARD_ID=trello-board-id
-```
-
-Once you have created a board, create 2 different lists within the board. One called `To Do` and the other called `Completed`. Get the id of each list using the call below (this can be done with Postman):
-
-```
-https://api.trello.com/1/boards/[your-board-id]/lists?key=[your-api-key]&token=[your-api-token]
-```
-
-Update the `.env` file with the id of each list
-
-```bash
-TRELLO_TODO_LIST_ID=trello-todo-list-id
-TRELLO_COMPLETED_LIST_ID=trello-completed-list-id
-```
-
 
 
 ## Running the App
@@ -207,11 +187,8 @@ The docker-compose file was designed with CI in mind. The `.env` file is not ava
 ```bash
 docker-compose -f docker-compose.test-ci.yml run \
 -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
--e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} \
--e TRELLO_SECRET=${{ secrets.TRELLO_SECRET }} \
--e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} \
--e TRELLO_TODO_LIST_ID=${{ secrets.TRELLO_TODO_LIST_ID }} \
--e TRELLO_COMPLETED_LIST_ID=${{ secrets.TRELLO_COMPLETED_LIST_ID }} \
+-e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
+-e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
 e2e-ci
 ```
 
@@ -274,3 +251,5 @@ curl -dH -X POST "https://\$<deployment_username>:<deployment_password>@<webapp_
 
 The dollar sign will need to be escaped using a backslash: `\$`. The response to the curl command will contain a link to a log-stream.
 
+## Deployment to Azure (CI Pipeline)
+The CI Pipeline automatically publishes the application to Azure. This only happens when the target branch is main and the event type is push (this occurs after a pull request is merged or direct push which is not recommend).  
