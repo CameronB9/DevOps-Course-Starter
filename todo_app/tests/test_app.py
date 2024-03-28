@@ -33,10 +33,10 @@ def client():
 class MockData:
     def __init__(self) -> None:
         self.mongo_client = pymongo.MongoClient(getenv('MONGO_CONNECTION_STRING'))
-        self.db = self.mongo_client['todo-db']
+        self.db = self.mongo_client[getenv('MONGO_DATABASE_NAME')]
         self.collection = self.db['todos']
 
-    def insert_todos(self, count: int) -> List[str]:
+    def insert_todos(self, count: int = 10) -> List[str]:
         data = [
             {
                 'name': f'Todo Item {i+1}',

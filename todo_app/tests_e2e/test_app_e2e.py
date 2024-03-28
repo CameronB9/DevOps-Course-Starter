@@ -12,6 +12,8 @@ from selenium.webdriver.common.by import By
 from todo_app import app
 
 db_name = 'E2E_TEST_todo-db'
+port = "5867"
+
 
 
 def delete_db():
@@ -20,16 +22,13 @@ def delete_db():
 
 @pytest.fixture(scope='module')
 def app_with_temp_db():
-
     file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
-
     os.environ['MONGO_DATABASE_NAME'] = db_name
-
 
     application = app.create_app()
 
-    thread = Thread(target=lambda: application.run(use_reloader=False))
+    thread = Thread(target=lambda: application.run(use_reloader=False, port=port))
     thread.daemon = True
     thread.start()
     sleep(1)
@@ -50,7 +49,7 @@ def driver():
         yield driver
 
 def test_task_journey(driver: WebDriver, app_with_temp_db):
-    driver.get('http://localhost:5000')
+    driver.get(f'http://localhost:{port}')
     assert driver.title == 'To-Do App'
 
     input = driver.find_element(By.ID, 'todo-name')
