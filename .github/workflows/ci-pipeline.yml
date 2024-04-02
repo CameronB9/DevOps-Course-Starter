@@ -29,6 +29,7 @@ jobs:
           docker-compose -f docker-compose.test-ci.yml run \
           -e MONGO_INITDB_ROOT_USERNAME=${{secrets.MONGO_INITDB_ROOT_USERNAME}} \
           -e MONGO_INITDB_ROOT_PASSWORD=${{secrets.MONGO_INITDB_ROOT_PASSWORD}} \
+          -d \
           mongo-db
 
       - name: Run e2e tests
