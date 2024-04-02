@@ -24,6 +24,13 @@ jobs:
       - name: Run unit and integration tests
         run: docker-compose -f docker-compose.test-ci.yml run test-ci
         if: github.event.schedule != '08 13 * * *'
+      - name: Run MongoDB container for e2e tests
+        run: |
+          docker-compose -f docker-compose.test-ci.yml run \
+          -e MONGO_INITDB_ROOT_USERNAME=${{secrets.MONGO_INITDB_ROOT_USERNAME}} \
+          -e MONGO_INITDB_ROOT_PASSWORD=${{secrets.MONGO_INITDB_ROOT_PASSWORD}} \
+          mongo-db
+
       - name: Run e2e tests
         run: | 
           docker-compose -f docker-compose.test-ci.yml run \

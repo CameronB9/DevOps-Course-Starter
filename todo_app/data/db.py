@@ -57,7 +57,6 @@ class DB:
             arr.append(MongoItem.from_dict(item))
         return arr
 
-
     def get_item(self, id: str) -> MongoItem:
         objectId = ObjectId(id)
         item = self.collection.find_one({ '_id': objectId })
