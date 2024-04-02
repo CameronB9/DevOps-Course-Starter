@@ -21,10 +21,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Generate .env file
-        run: echo -e "MONGO_INITDB_ROOT_USERNAME=${{secrets.MONGO_INITDB_ROOT_USERNAME}}\nMONGO_INITDB_ROOT_PASSWORD=${{secrets.MONGO_INITDB_ROOT_PASSWORD}}\nSECRET_KEY=${{ secrets.SECRET_KEY }}\nMONGO_CONNECTION_STRING=${{ secrets.MONGO_CONNECTION_STRING }}\nMONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }}\nFLASK_ENV=docker" > .env.docker.dev
-      - name: Run unit, integration and e2e tests
-        run: docker-compose -f docker-compose.test-ci.yml up
+      - name: Run unit and integration tests
+        run: docker-compose -f docker-compose.test-ci.yml run test-ci
+        if: github.event.schedule != '08 13 * * *'
+      - name: Run e2e tests
+        run: | 
+          docker-compose -f docker-compose.test-ci.yml run \
+          -e FLASK_ENV=docker \
+          -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+          -e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
+          -e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
+          -e MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+          -e MONGO_INITDB_ROOT_PASSWORD=root${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+          e2e-ci
         if: github.event.schedule != '08 13 * * *'
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python-3.10@master
