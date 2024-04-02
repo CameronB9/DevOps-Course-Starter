@@ -26,13 +26,13 @@ jobs:
         if: github.event.schedule != '08 13 * * *'
       - name: Run e2e tests
         run: | 
+          export MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }} &&\
+          export MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }} &&\
           docker-compose -f docker-compose.test-ci.yml run \
           -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
           -e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
           -e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
-          -e MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }} \
-          -e MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }} \
           e2e-ci
         if: github.event.schedule != '08 13 * * *'
       - name: Run Snyk to check for vulnerabilities
