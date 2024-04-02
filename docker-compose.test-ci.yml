@@ -19,15 +19,15 @@ services:
     command: --ignore todo_app/tests
     volumes:
       - ./todo_app:/app/todo-app/todo_app
-    environment:
-      - MONGO_CONNECTION_STRING
-      - MONGO_DATABASE_NAME
+    env_file:
+      - .env.docker.dev
+    depends_on:
+      - mongo-db
   mongo-db:
     image: mongo:7.0
     container_name: mongo_container
     restart: always
     ports:
       - 27017:27017
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME
-      - MONGO_INITDB_ROOT_PASSWORD
+    env_file:
+      - .env.docker.dev

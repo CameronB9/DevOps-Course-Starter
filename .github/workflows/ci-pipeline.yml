@@ -21,14 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Generate .env file
+        run: echo -e "MONGO_INITDB_ROOT_USERNAME=${{secrets.MONGO_INITDB_ROOT_USERNAME}}\nMONGO_INITDB_ROOT_PASSWORD=${{secrets.MONGO_INITDB_ROOT_PASSWORD}}\nSECRET_KEY=${{ secrets.SECRET_KEY }}\nMONGO_CONNECTION_STRING=${{ secrets.MONGO_CONNECTION_STRING }}\nMONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }}" > .env.docker.dev
       - name: Run unit, integration and e2e tests
-        run: |
-          MONGO_INITDB_ROOT_USERNAME=${{secrets.MONGO_INITDB_ROOT_USERNAME}} \
-          MONGO_INITDB_ROOT_PASSWORD=${{secrets.MONGO_INITDB_ROOT_PASSWORD}} \
-          SECRET_KEY=${{ secrets.SECRET_KEY }} \
-          MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
-          MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
-          docker-compose -f docker-compose.test-ci.yml up
+        run: docker-compose -f docker-compose.test-ci.yml up
         if: github.event.schedule != '08 13 * * *'
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python-3.10@master
