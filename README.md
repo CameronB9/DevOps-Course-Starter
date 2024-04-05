@@ -39,8 +39,12 @@ The `.env` file also stores Mongo DB credentials which are required to run the a
 ```bash
 MONGO_CONNECTION_STRING=[mongo-connection-string]
 MONGO_DATABASE_NAME=[db-name]
+TRELLO_API_KEY=[trello-api-key]
+TRELLO_SECRET=[trello-secret]
+TRELLO_BOARD_ID=[trello-board-id]
 ```
 
+Although this application no longer uses Trello for data storage, to use the migration script, the `TRELLO_` variables will need to be set.
 
 ## Running the App
 
@@ -156,7 +160,48 @@ docker-compose -f docker-compose.prod.yml up --build
 After running for the first time, you can omit build to skip the build stage.
 
 ### Running the development environment
-The development environment runs the application and tests. The tests will run every time a file change is detected. The Flask server will also restart when changes are detected.
+The development environment runs the application and tests. The tests will run every time a file change is detected. The Flask server will also restart when changes are detected. It will also run the dev database which runs in a separate container.
+
+It is recommended to create another .env file for running the development environment. This allows a dev database to be used. Create a new .env file called `.env.docker.dev`:
+
+```bash
+FLASK_APP=todo_app/app
+FLASK_RUN_HOST=0.0.0.0
+FLASK_ENV=docker
+FLASK_RUN_PORT=5000
+
+SECRET_KEY=secret-key
+
+KEY_VAULT_NAME=todo-app
+
+MONGO_CONNECTION_STRING=mongodb://[dev-db-username]:[dev-db-password]@[mongo-container-name]:27017/
+MONGO_DATABASE_NAME="todo-db"
+MONGO_INITDB_ROOT_USERNAME=[dev-db-username]
+MONGO_INITDB_ROOT_PASSWORD=[dev-db-password]
+```
+
+The variables can all be the same aside from the one prefixed with `MONGO_`. The connection string is made up of the username, password and container name. The container name is set within the `docker-compose.dev.yml` file:
+
+```yml
+  mongo-db:
+    image: mongo:7.0
+    container_name: mongo_container
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - .env.docker.dev
+    volumes:
+      - ./dev_db:/data/db
+```
+
+For example, if the username is `admin`, password is `abcdefg` and container name is `mongo_container`, the connection string would be:
+
+```bash
+mongodb://admin:abcdefg@mongo_container:27017/
+```
+
+Use the following command to run the dev container:
 
 ```bash
 docker-compose -f docker-compose.dev.yml up --build
@@ -173,6 +218,10 @@ To run flask and tests run the below command:
 ```bash
 docker-compose -f docker-compose.dev.yml up dev test
 ```
+
+#### Development Database
+
+
 
 ### Running tests in a container
 
@@ -253,3 +302,11 @@ The dollar sign will need to be escaped using a backslash: `\$`. The response to
 
 ## Deployment to Azure (CI Pipeline)
 The CI Pipeline automatically publishes the application to Azure. This only happens when the target branch is main and the event type is push (this occurs after a pull request is merged or direct push which is not recommend).  
+
+## Migrating Trello Data to Mongo DB
+
+A script has been setup to copy data from trello to mongo DB. In order for the script to work, the `TRELLO_` variables need to be set in the `.env` file. To run the script run the following command from the root directory of this project:
+
+```bash
+python scripts/migrate_trello_to_mongo.py
+```
