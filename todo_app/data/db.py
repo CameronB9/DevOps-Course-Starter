@@ -57,6 +57,10 @@ class DB:
             arr.append(MongoItem.from_dict(item))
         return arr
 
+    def get_items_filter(self, query):
+        return [MongoItem.from_dict(item) for item in self.collection.find(query)]
+        
+
     def get_item(self, id: str) -> MongoItem:
         objectId = ObjectId(id)
         item = self.collection.find_one({ '_id': objectId })
@@ -67,6 +71,10 @@ class DB:
         inserted_item = self.collection.insert_one(item.__dict__)
 
         return inserted_item.inserted_id
+
+    def add_items(self, items: List[MongoItem]) -> List[str]:
+        inserted_items = self.collection.insert_many([item.__dict__ for item in items])
+        return inserted_items.inserted_ids
 
     def update_item(self, item: MongoItem) -> None:
         filter = { '_id': item._id }

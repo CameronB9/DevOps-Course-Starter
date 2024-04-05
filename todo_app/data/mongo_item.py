@@ -1,14 +1,18 @@
 from datetime import datetime
 
 class MongoItem:
-    def __init__(self, id, name, description, is_done, due, modified_date, mode) -> None:
+    def __init__(self, id, name, description, is_done, due, modified_date, mode, trello_id) -> None:
         if id is not None:
             self._id: str = id
+        if trello_id is not None:
+            self.trello_id = trello_id
         self.name: str = name
         self.description: str = description
         self.is_done: bool = is_done
         self.modified_date: str = modified_date
+
         self.handle_due_date(mode, due)
+
 
     @classmethod
     def from_dict(cls, dict, mode = None):
@@ -19,7 +23,8 @@ class MongoItem:
             is_done = dict['is_done'],
             due = dict['due_date'] if 'due_date' in dict else None, 
             modified_date = dict['modified_date'], 
-            mode = mode
+            mode = mode,
+            trello_id = dict['trello_id'] if 'trello_id' in dict else None
         )
     
     def handle_due_date(self, mode, due):
