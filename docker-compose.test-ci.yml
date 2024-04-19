@@ -19,3 +19,13 @@ services:
     command: --ignore todo_app/tests
     volumes:
       - ./todo_app:/app/todo-app/todo_app
+    depends_on:
+      - mongo-db
+  mongo-db:
+    image: mongo:7.0
+    container_name: mongo_container
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - .env.test

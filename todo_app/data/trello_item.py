@@ -1,6 +1,6 @@
 from datetime import datetime
 
-class Item:
+class TrelloItem:
     def __init__(self, id, name, description, due_date, modified_date = None, status = "To Do") -> None:
         self.id = id
         self.name = name

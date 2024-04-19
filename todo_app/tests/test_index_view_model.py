@@ -1,4 +1,4 @@
-from todo_app.data.item import Item
+from todo_app.data.mongo_item import MongoItem
 from todo_app.view_models.index_view_model import ViewModel
 from datetime import datetime, timedelta
 
@@ -12,18 +12,18 @@ def generate_mock_data(items = 10, num_todo = 5, modified_today = 5):
     yesterday = (datetime.now() - timedelta(days = 1)).strftime('%Y-%m-%d')
 
     mock_items = [
-        (
-            f'{i + 1}', 
-            f'Item {i + 1}', 
-            f'Item {i + 1} Description', 
-            None, 
-            today if i < modified_today else str(yesterday),
-            'To Do' if i < num_todo else 'Completed'
-        )
+        {
+            "_id": str(i),
+            "name": f"Test Item {i + 1}",
+            "description": f"Test Item {i + 1} Description",
+            "is_done": False if i < num_todo else True,
+            "modified_date": today if i < modified_today else str(yesterday),
+            "due": None
+        }
             for i in range(items)
     ]
 
-    return [Item(*item) for item in mock_items]
+    return [MongoItem.from_dict(item) for item in mock_items]
 
 @pytest.fixture
 def view_model() -> ViewModel:
@@ -34,13 +34,13 @@ def test_completed_items_returns_the_correct_data(view_model: ViewModel):
     completed_items = view_model.completed_items
 
     assert len(completed_items) == 5
-    assert 'To do' not in [item.status for item in completed_items]
+    assert False not in [item.is_done for item in completed_items]
 
 def test_todo_items_returns_the_correct_data(view_model: ViewModel):
     todo_items = view_model.todo_items
 
     assert len(todo_items) == 5
-    assert 'Completed' not in [item.status for item in todo_items]
+    assert True not in [item.is_done for item in todo_items]
 
 def test_item_lists_returns_the_correct_data(view_model: ViewModel):
     item_lists = view_model.item_lists
@@ -54,7 +54,7 @@ status_test_params = [
         "What are you waiting for, there's 5 left!"
     ),
     (
-        [item for item in generate_mock_data() if item.status == 'Completed'], 
+        [item for item in generate_mock_data() if item.is_done == True], 
         "Everything is complete, you can relax for now!"
     ),
     (
@@ -69,7 +69,7 @@ status_test_params = [
 )
 def test_status_messages_returns_the_correct_message(
     view_model: ViewModel, 
-    test_input: List[Item], 
+    test_input: List[MongoItem], 
     expected: str
 ):
     view_model = ViewModel(test_input)

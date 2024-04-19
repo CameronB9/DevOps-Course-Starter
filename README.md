@@ -34,33 +34,17 @@ $ cp .env.template .env  # (first time only)
 
 The `.env` file is used by flask to set environment variables when running `flask run`. This enables things like development mode (which also enables features like hot reloading when you make a file change). There's also a [SECRET_KEY](https://flask.palletsprojects.com/en/1.1.x/config/#SECRET_KEY) variable which is used to encrypt the flask session cookie.
 
-The `.env` file also stores Trello credentials which are required to run the app. You will need a [Trello account](https://trello.com/signup) and API key. You can find instructions on how to do this [here](https://trello.com/app-key). Replace the following environment variables in your `.env` file:
+The `.env` file also stores Mongo DB credentials which are required to run the app. It is recommended to use the Mongo DB Comos DB in Azure. You can find instructions on how to do this [here](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/quickstart-dotnet?tabs=azure-cli&pivots=devcontainer-codespace). Replace the following environment variables in your `.env` file:
 
 ```bash
-TRELLO_API_KEY=trello-api-key
-TRELLO_SECRET=trello-secret
+MONGO_CONNECTION_STRING=[mongo-connection-string]
+MONGO_DATABASE_NAME=[db-name]
+TRELLO_API_KEY=[trello-api-key]
+TRELLO_SECRET=[trello-secret]
+TRELLO_BOARD_ID=[trello-board-id]
 ```
 
-After creating a Trello account, you also need to create a board which will be used to store the to do items. This can be done after signing into Trello. Once you've created a board, you can follow the instructions [here](https://developer.atlassian.com/cloud/trello/guides/rest-api/api-introduction/#your-first-api-call) to find the ID of the board you wish to use. Populate the following environment variable with your board ID:
-
-```bash
-TRELLO_BOARD_ID=trello-board-id
-```
-
-Once you have created a board, create 2 different lists within the board. One called `To Do` and the other called `Completed`. Get the id of each list using the call below (this can be done with Postman):
-
-```
-https://api.trello.com/1/boards/[your-board-id]/lists?key=[your-api-key]&token=[your-api-token]
-```
-
-Update the `.env` file with the id of each list
-
-```bash
-TRELLO_TODO_LIST_ID=trello-todo-list-id
-TRELLO_COMPLETED_LIST_ID=trello-completed-list-id
-```
-
-
+Although this application no longer uses Trello for data storage, to use the migration script, the `TRELLO_` variables will need to be set.
 
 ## Running the App
 
@@ -176,7 +160,48 @@ docker-compose -f docker-compose.prod.yml up --build
 After running for the first time, you can omit build to skip the build stage.
 
 ### Running the development environment
-The development environment runs the application and tests. The tests will run every time a file change is detected. The Flask server will also restart when changes are detected.
+The development environment runs the application and tests. The tests will run every time a file change is detected. The Flask server will also restart when changes are detected. It will also run the dev database which runs in a separate container.
+
+It is recommended to create another .env file for running the development environment. This allows a dev database to be used. Create a new .env file called `.env.docker.dev`:
+
+```bash
+FLASK_APP=todo_app/app
+FLASK_RUN_HOST=0.0.0.0
+FLASK_ENV=docker
+FLASK_RUN_PORT=5000
+
+SECRET_KEY=secret-key
+
+KEY_VAULT_NAME=todo-app
+
+MONGO_CONNECTION_STRING=mongodb://[dev-db-username]:[dev-db-password]@[mongo-container-name]:27017/
+MONGO_DATABASE_NAME="todo-db"
+MONGO_INITDB_ROOT_USERNAME=[dev-db-username]
+MONGO_INITDB_ROOT_PASSWORD=[dev-db-password]
+```
+
+The variables can all be the same aside from the one prefixed with `MONGO_`. The connection string is made up of the username, password and container name. The container name is set within the `docker-compose.dev.yml` file:
+
+```yml
+  mongo-db:
+    image: mongo:7.0
+    container_name: mongo_container
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - .env.docker.dev
+    volumes:
+      - ./dev_db:/data/db
+```
+
+For example, if the username is `admin`, password is `abcdefg` and container name is `mongo_container`, the connection string would be:
+
+```bash
+mongodb://admin:abcdefg@mongo_container:27017/
+```
+
+Use the following command to run the dev container:
 
 ```bash
 docker-compose -f docker-compose.dev.yml up --build
@@ -194,6 +219,10 @@ To run flask and tests run the below command:
 docker-compose -f docker-compose.dev.yml up dev test
 ```
 
+#### Development Database
+
+
+
 ### Running tests in a container
 
 Unit and integration tests can be ran using the below command:
@@ -207,11 +236,8 @@ The docker-compose file was designed with CI in mind. The `.env` file is not ava
 ```bash
 docker-compose -f docker-compose.test-ci.yml run \
 -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
--e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} \
--e TRELLO_SECRET=${{ secrets.TRELLO_SECRET }} \
--e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} \
--e TRELLO_TODO_LIST_ID=${{ secrets.TRELLO_TODO_LIST_ID }} \
--e TRELLO_COMPLETED_LIST_ID=${{ secrets.TRELLO_COMPLETED_LIST_ID }} \
+-e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
+-e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
 e2e-ci
 ```
 
@@ -274,3 +300,13 @@ curl -dH -X POST "https://\$<deployment_username>:<deployment_password>@<webapp_
 
 The dollar sign will need to be escaped using a backslash: `\$`. The response to the curl command will contain a link to a log-stream.
 
+## Deployment to Azure (CI Pipeline)
+The CI Pipeline automatically publishes the application to Azure. This only happens when the target branch is main and the event type is push (this occurs after a pull request is merged or direct push which is not recommend).  
+
+## Migrating Trello Data to Mongo DB
+
+A script has been setup to copy data from trello to mongo DB. In order for the script to work, the `TRELLO_` variables need to be set in the `.env` file. To run the script run the following command from the root directory of this project:
+
+```bash
+python scripts/migrate_trello_to_mongo.py
+```

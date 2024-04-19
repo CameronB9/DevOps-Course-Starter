@@ -4,11 +4,12 @@ services:
       dockerfile: Dockerfile
       context: .
       target: development
+    container_name: app_container
     image: todo-app:dev
     ports: 
-     - 5000:3001
+     - 5000:5000
     env_file:
-      - .env
+      - .env.docker.dev
     volumes:
       - ./todo_app:/app/todo-app/todo_app
   test:
@@ -16,6 +17,7 @@ services:
       dockerfile: Dockerfile
       context: .
       target: test-dev
+    container_name: test_container
     image: todo-app:tests
     command: --ignore todo_app/tests_e2e
     env_file:
@@ -27,9 +29,20 @@ services:
       dockerfile: Dockerfile
       context: .
       target: test-dev
+    container_name: e2e_container
     image: todo-app:tests-e2e
     command: --ignore todo_app/tests
     env_file:
-      - .env
+      - .env.docker.dev
     volumes:
       - ./todo_app:/app/todo-app/todo_app
+  mongo-db:
+    image: mongo:7.0
+    container_name: mongo_container
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - .env.docker.dev
+    volumes:
+      - ./dev_db:/data/db

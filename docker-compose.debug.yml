@@ -8,7 +8,16 @@ services:
     ports: 
      - 3001:3001
     env_file:
-      - .env
+      - .env.docker.dev
     volumes:
       - ./todo_app:/app/todo-app/todo_app
-
+  mongo-db:
+    image: mongo:7.0
+    container_name: mongo_container
+    restart: always
+    ports:
+      - 27017:27017
+    env_file:
+      - .env.docker.dev
+    volumes:
+      - ./dev_db:/data/db

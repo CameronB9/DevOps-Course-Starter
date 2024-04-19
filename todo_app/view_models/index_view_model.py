@@ -1,24 +1,24 @@
 from typing import List
 from datetime import datetime
 
-from todo_app.data.item import Item
 from todo_app.data.item_lists import ItemLists
+from todo_app.data.mongo_item import MongoItem
 
 class ViewModel:
-    def __init__(self, items: List[Item]):
+    def __init__(self, items: List[MongoItem]):
         self._items = items
 
     @property
-    def items(self) -> List[Item]:
+    def items(self) -> List[MongoItem]:
         return self._items
 
     @property
-    def todo_items(self) -> List[Item]:
-        return [item for item in self.items if item.status == 'To Do']
+    def todo_items(self) -> List[MongoItem]:
+        return [item for item in self.items if item.is_done == False]
 
     @property
-    def completed_items(self) -> List[Item]:
-        return [item for item in self.items if item.status == 'Completed']
+    def completed_items(self) -> List[MongoItem]:
+        return [item for item in self.items if item.is_done == True]
 
     @property
     def item_lists(self) -> List[ItemLists]:
@@ -40,7 +40,7 @@ class ViewModel:
 
     @property
     def num_completed_items(self) -> int:
-        completed_items = [item for item in self.items if item.status == 'Completed']
+        completed_items = [item for item in self.items if item.is_done == True]
         return len(completed_items)
     
     @property
@@ -58,16 +58,19 @@ class ViewModel:
 
     @property
     def recent_done_items(self):
-        today = datetime.date(datetime.now()).strftime('%d/%m/%Y')
-        return [item for item in self.completed_items if item.modified_date == today ]
+        today = datetime.date(datetime.now()).strftime('%Y-%m-%d')
+        return [
+            item 
+                for item in self.completed_items if item.modified_date == today 
+        ]
 
     @property
     def older_done_items(self):
         today = datetime.date(datetime.now()).strftime('%d/%m/%Y')
         return [item for item in self.completed_items if item.modified_date != today ]
 
-    def render_checkbox_icon(self, item: Item) -> str:
-        if item.status == 'Completed':
+    def render_checkbox_icon(self, item: MongoItem) -> str:
+        if item.is_done == True:
             return 'check_box'
         else:
             return 'check_box_outline_blank'

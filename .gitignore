@@ -119,3 +119,7 @@ env/
 ### Configuration files ###
 .env
 secrets.yml
+.env.docker.dev
+
+### Mongo DB Docker Volume ###
+dev_db

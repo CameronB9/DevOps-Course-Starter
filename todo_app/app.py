@@ -2,9 +2,9 @@ import os
 from flask import Flask, redirect, render_template, request
 from datetime import datetime
 
-from todo_app.data.trello_items import Trello
-from todo_app.utils import get_trello_credentials
 from todo_app.view_models.index_view_model import ViewModel
+from todo_app.data.db import DB
+from todo_app.data.mongo_item import MongoItem
 
 from todo_app.flask_config import Config
 from todo_app.kv_secrets import get_secrets
@@ -20,12 +20,9 @@ def create_app():
 
     @app.route('/')
     def index():
-
-        trello = Trello()
-
-        todo_items = trello.get_items_sorted()
-
-        item_view_model = ViewModel(todo_items)
+        db = DB()
+        items = db.get_items()
+        item_view_model = ViewModel(items)
 
         return render_template(
             'index.html', 
@@ -42,43 +39,33 @@ def create_app():
 
             to_add = {
                 'name': name,
+                'modified_date': datetime.now().isoformat(),
+                'is_done': False
             }
 
             if description.strip() != '':
-                to_add['desc'] = description
+                to_add['description'] = description
             
             if date.strip() != '':
-                to_add['due'] = datetime.strptime(date, '%d/%m/%Y').isoformat()
+                to_add['due_date'] = datetime.strptime(date, '%d/%m/%Y').isoformat()
             
-
-            trello = Trello()
-            trello.add_item(to_add)
+            db = DB()
+            db.add_item(MongoItem.from_dict(to_add, mode = "Save"))
         return redirect('/')
 
     @app.route('/todo/change-status/<id>', methods=['POST'])
     def change_todo_status(id):
-        credentials = get_trello_credentials()
-        trello = Trello()
-        todo_item = trello.get_item(id)
-        current_list = todo_item['idList']
-
-        new_list = None
-
-        if current_list == credentials['todo_list']:
-            new_list = credentials['completed_list']
-        else:
-            new_list = credentials['todo_list']
-
-        to_update = {
-            'idList': new_list
-        }
-        trello.update_item(id, to_update)
+        db = DB()
+        item_to_update = db.get_item(id)
+        item_to_update.update_status()
+        db.update_item(item_to_update)
         return redirect('/')
 
     @app.route('/todo/delete/<id>', methods=['POST'])
     def delete_todo(id):
-        trello = Trello()
-        trello.delete_item(id)
+        db = DB()
+        item_to_delete = db.get_item(id)
+        db.delete_item(item_to_delete)
         return redirect('/')
     return app
 

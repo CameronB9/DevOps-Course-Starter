@@ -9,11 +9,11 @@ FROM base as development
     COPY pyproject.toml /app/todo-app/
     RUN poetry install
     ENTRYPOINT ["poetry", "run", "flask", "run"]
-
 FROM development as debug
     ENTRYPOINT [ "tail", "-f", "/dev/null" ]
 
 FROM development as test-dev
+    RUN poetry add setuptools
     RUN apt update -qqy && apt install -qqy wget gnupg unzip
     RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \  
     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \  

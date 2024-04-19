@@ -6,6 +6,6 @@ services:
       target: production
     image: todo-app:prod
     ports:
-      - 8000:8000
+      - 80:80
     env_file:
       - .env

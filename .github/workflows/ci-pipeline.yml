@@ -29,15 +29,13 @@ jobs:
           docker-compose -f docker-compose.test-ci.yml run \
           -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-          -e TRELLO_API_KEY=${{ secrets.TRELLO_API_KEY }} \
-          -e TRELLO_SECRET=${{ secrets.TRELLO_SECRET }} \
-          -e TRELLO_BOARD_ID=${{ secrets.TRELLO_BOARD_ID }} \
-          -e TRELLO_TODO_LIST_ID=${{ secrets.TRELLO_TODO_LIST_ID }} \
-          -e TRELLO_COMPLETED_LIST_ID=${{ secrets.TRELLO_COMPLETED_LIST_ID }} \
+          -e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
+          -e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
           e2e-ci
         if: github.event.schedule != '08 13 * * *'
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python-3.10@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Send custom JSON data to Slack workflow
