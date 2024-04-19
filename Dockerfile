@@ -10,6 +10,7 @@ FROM base as development
     RUN poetry install
     ENTRYPOINT ["poetry", "run", "flask", "run"]
 FROM development as debug
+    COPY .vscode/launch.json /app/todo-app/.vscode/
     ENTRYPOINT [ "tail", "-f", "/dev/null" ]
 
 FROM development as test-dev
