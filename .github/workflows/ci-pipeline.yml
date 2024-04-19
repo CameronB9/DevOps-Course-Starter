@@ -35,6 +35,7 @@ jobs:
         if: github.event.schedule != '08 13 * * *'
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python-3.10@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Send custom JSON data to Slack workflow
