@@ -25,6 +25,7 @@ def app_with_temp_db():
     file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
     os.environ['MONGO_DATABASE_NAME'] = db_name
+    os.environ['LOGIN_DISABLED'] = "True"
 
     application = app.create_app()
 
