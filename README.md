@@ -65,6 +65,18 @@ The app should be running on port 5000. You should see output similar to the fol
 ```
 Now visit [`http://localhost:5000/`](http://localhost:5000/) in your web browser to view the app.
 
+## Authentication
+
+The app uses GitHub authentication using the "authorization code" OAuth flow. Users will be redirected to GitHub to sign in before they can access the site. Users and their roles are stored in the database There are 3 different user roles:
+
+| Role               | Description                                                   |
+| ------------------ | ------------------------------------------------------------- |
+| Admin              | Can read, add, update and delete todos. Can change user roles |
+| Writer             | Can read, add, update and delete todos.                       |
+| Reader             | read only                                                     |
+
+The first user is given the admin role subsequent users get the reader role. Admin users can manage roles for all users using the `/user/management page`
+
 ## Testing
 
 ### Running Tests
