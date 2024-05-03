@@ -1,12 +1,19 @@
 from typing import List
 from datetime import datetime
 
+from todo_app.user import User, Roles
 from todo_app.data.item_lists import ItemLists
 from todo_app.data.mongo_item import MongoItem
 
 class ViewModel:
-    def __init__(self, items: List[MongoItem]):
+    def __init__(
+        self, 
+        items: List[MongoItem], 
+        error: str | None = "",
+    ):
         self._items = items
+        self.error = error
+
 
     @property
     def items(self) -> List[MongoItem]:
@@ -68,6 +75,12 @@ class ViewModel:
     def older_done_items(self):
         today = datetime.date(datetime.now()).strftime('%d/%m/%Y')
         return [item for item in self.completed_items if item.modified_date != today ]
+
+    def render_error(self) -> str:
+        if self.error == 'PERMISSION_ERROR':
+            return ' You don\'t have permission to perform this action!'
+
+        return ''
 
     def render_checkbox_icon(self, item: MongoItem) -> str:
         if item.is_done == True:

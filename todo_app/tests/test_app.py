@@ -6,10 +6,13 @@ from typing import List, Dict
 
 import mongomock
 from flask.testing import FlaskClient
+from flask_login import login_manager
 import pymongo
 
-
+from todo_app.user import User
 from todo_app import app
+
+
 
 @pytest.fixture(scope='module')
 def vcr_config():

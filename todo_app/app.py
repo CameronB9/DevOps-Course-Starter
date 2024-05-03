@@ -1,6 +1,6 @@
 import os
 from flask import Flask, redirect, render_template, request, session
-from flask_login import LoginManager, login_required, UserMixin, login_user
+from flask_login import LoginManager, UserMixin, login_required, login_user, current_user
 from urllib.parse import urlencode
 from datetime import datetime
 import random
@@ -8,8 +8,11 @@ import string
 import requests
 
 from todo_app.view_models.index_view_model import ViewModel
+from todo_app.view_models.user_view_model import UserViewModel
 from todo_app.data.db import DB
 from todo_app.data.mongo_item import MongoItem
+from todo_app.data.user_management import UserManagement
+from todo_app.user import Roles, User
 
 from todo_app.flask_config import Config
 from todo_app.kv_secrets import get_secrets
@@ -25,6 +28,9 @@ def create_app():
 
     login_manager = LoginManager()
 
+    if app.config.get('LOGIN_DISABLED') == True:
+        login_manager.anonymous_user = lambda : User('TEST_USER', Roles.writer)
+    
     @login_manager.unauthorized_handler
     def unauthenticated():
 
@@ -33,7 +39,7 @@ def create_app():
 
         params = {
             'client_id': os.environ['GITHUB_OAUTH_CLIENT_ID'],
-            'redirect_uri': f'{os.environ['HOMEPAGE_URL']}/login/callback',
+            'redirect_uri': f'{os.environ["HOMEPAGE_URL"]}/login/callback',
             'state': state,
             'allow_signup': True
         }
@@ -42,9 +48,13 @@ def create_app():
 
         return redirect(f'{os.environ["GITHUB_OAUTH_URL"]}/authorize?{query_str}')
 
+
     @login_manager.user_loader
     def load_user(user_id):
-        return User(user_id)
+        user_management = UserManagement()
+        user = user_management.get_user(user_id)
+        return user
+        #return User(user_id)
 
     login_manager.init_app(app)
 
@@ -53,17 +63,18 @@ def create_app():
     def index():
         db = DB()
         items = db.get_items()
-        item_view_model = ViewModel(items)
+        error = request.args.get('e')
+        user = current_user
+        item_view_model = ViewModel(items, error)
+        user_view_model = UserViewModel(user)
 
         return render_template(
             'index.html', 
-            view_model = item_view_model
+            view_model = item_view_model,
+            user_view_model = user_view_model,
+            Roles = Roles
         )
 
-    class User(UserMixin):
-        def __init__(self, id) -> None:
-            super().__init__()
-            self.id = id
 
     @app.route('/login/callback')
     def login_callback():
@@ -100,8 +111,14 @@ def create_app():
         ).json()
 
         user_id = user_response['id']
+        username = user_response['login']
+        user_management = UserManagement()
+        user = user_management.get_user(user_id)
 
-        user = User(user_id)
+        if user is None:
+            num_users = len(user_management.get_users())
+            role = Roles.admin if num_users == 0 else Roles.reader
+            user = user_management.add_user(user_id, username, role)
 
         login_user(user)
 
@@ -109,6 +126,7 @@ def create_app():
 
     @app.route('/todo/add', methods=['POST'])
     @login_required
+    @User.check_permission('write')
     def add_todo():
         name = request.form.get('todo-name')
         description = request.form.get('todo-description')
@@ -134,6 +152,7 @@ def create_app():
 
     @app.route('/todo/change-status/<id>', methods=['POST'])
     @login_required
+    @User.check_permission('write')
     def change_todo_status(id):
         db = DB()
         item_to_update = db.get_item(id)
@@ -143,6 +162,7 @@ def create_app():
 
     @app.route('/todo/delete/<id>', methods=['POST'])
     @login_required
+    @User.check_permission('write')
     def delete_todo(id):
         db = DB()
         item_to_delete = db.get_item(id)
@@ -153,6 +173,30 @@ def create_app():
     def login_error():
         return render_template('login_error.html')            
 
+    @app.route('/user/management', methods=['GET'])
+    @User.check_permission('admin')
+    def user_management():
+
+        user_view_model = UserViewModel(current_user)
+        user_management = UserManagement()
+        users = user_management.get_users()
+
+        return render_template('user_management.html',
+            user_view_model = user_view_model,
+            users = users,
+            roles = Roles
+        )
+
+    @User.check_permission('admin')
+    @app.route('/user/management/update/<id>', methods=['POST'])
+    def update_user(id):
+        role = request.form.get('role')
+        user_management = UserManagement()
+        if role in Roles.list():
+            user_management.update_user_role(id, role)
+        return redirect('/user/management')
+
     return app
+
 
 
