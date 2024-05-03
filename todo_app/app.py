@@ -29,7 +29,7 @@ def create_app():
     login_manager = LoginManager()
 
     if app.config.get('LOGIN_DISABLED') == True:
-        login_manager.anonymous_user = lambda : User('TEST_USER', Roles.writer)
+        login_manager.anonymous_user = lambda : User('TEST_USER', role=Roles.writer)
     
     @login_manager.unauthorized_handler
     def unauthenticated():
