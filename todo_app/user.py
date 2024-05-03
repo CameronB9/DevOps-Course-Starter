@@ -26,7 +26,7 @@ class User(UserMixin):
 
     @property
     def role(self):
-        return self._role if self._role is not None else "unknown"
+        return self._role if self._role is not None else Roles.reader
 
     @staticmethod
     def _check_permission(fn):
