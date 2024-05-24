@@ -5,6 +5,13 @@ terraform {
 			version = ">= 3.8"
 		}
 	}
+
+	backend "azurerm" {
+		resource_group_name = "Cohort28_CamBod_ProjectExercise"
+		storage_account_name = "cbtodoapptfstate"
+		container_name = "cbtodoapptfstatectr"
+		key = "terraform.tfstate"
+	}
 }
 
 provider "azurerm" {
@@ -62,9 +69,9 @@ resource "azurerm_cosmosdb_account" "db" {
 		failover_priority = 0
 	}
 
-	#lifecycle {
+	lifecycle {
 		#prevent_destroy = true
-	#}
+	}
 
 }
 
@@ -118,7 +125,7 @@ data azurerm_linux_web_app "main" {
 }
 
 resource "azurerm_key_vault" "main" {
-	name                        = "${var.prefix}-cb-todo-app-kv-tf"
+	name                        = "${var.prefix}-cb-todo-tf"
 	location                    = data.azurerm_resource_group.main.location
 	resource_group_name         = data.azurerm_resource_group.main.name
 	tenant_id                   = data.azurerm_client_config.main.tenant_id
