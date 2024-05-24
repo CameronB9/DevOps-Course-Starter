@@ -8,6 +8,12 @@ variable "app_service_name" {
     sensitive = false
 }
 
+variable "login_disabled" {
+  description = "Used to disable/enable github oauth login"
+  default = "False"
+  sensitive = false
+}
+
 variable "secret_key" {
     description = "Flask session secret key"
     sensitive = true

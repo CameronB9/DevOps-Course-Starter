@@ -14,31 +14,58 @@ on:
       - '.env.j2'
   schedule:
     - cron: '08 13 * * *'
-
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 jobs:
   build:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      -
+        uses: actions/checkout@v2
       - name: Run unit and integration tests
         run: docker-compose -f docker-compose.test-ci.yml run test-ci
-        if: github.event.schedule != '08 13 * * *'
-      - name: Run e2e tests
+        #if: github.event.schedule != '08 13 * * *'
+        if: github.ref == 'refs/heads/REMOVE_BEFORE_PULL_REQUEST' && github.event_name == 'push' && github.event.schedule != '08 13 * * *'
+      - 
+        name: E2E test app terraform init
+        run: terraform init
+      - 
+        name: Setup test environment - terraform apply
+        env:
+          TF_VAR_prefix: e2e-test
+          TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
+          TF_VAR_github_oauth_client_id: ${{ secrets.TF_VAR_TEST_GITHUB_OAUTH_CLIENT_ID }}
+          TF_VAR_github_oauth_client_secret: ${{ secrets.TF_VAR_TEST_GITHUB_OAUTH_CLIENT_SECRET }}
+          TF_VAR_mongo_database_name: ${{ secrets.TF_VAR_MONGO_DATABASE_NAME }}
+        run: terraform apply
+      - 
+        name: Run e2e tests
         run: | 
           docker-compose -f docker-compose.test-ci.yml run \
           -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
           -e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
           -e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
+          -e CREATE_TEMP_APP=False
+          -e E2E_TEST_URL="$(terraform output -raw webapp_url)"
           e2e-ci
         if: github.event.schedule != '08 13 * * *'
-      - name: Run Snyk to check for vulnerabilities
+      - 
+        name: Destroy terraform test environment
+        run: terraform destroy
+        if: ${{ always() }}
+      - 
+        name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python-3.10@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Send custom JSON data to Slack workflow
+      - 
+        name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
@@ -60,16 +87,13 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         if: ${{ always() }}
+
+
   publish:
     name: Publish to Docker Hub and deploy to Azure
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.event.schedule != '08 13 * * *'
-    env:
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
     steps:
       - uses: actions/checkout@v2
       -

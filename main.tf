@@ -106,6 +106,7 @@ resource "azurerm_linux_web_app" "main" {
 		"DOCKER_REGISTRY_SERVER_URL"          = "https://cameronb9"
 		"FLASK_APP"                           = "todo_app/app"
 		"FLASK_ENV"                           = "production"
+		"LOGIN_DISABLED"                      = var.login_disabled
 		"GITHUB_OAUTH_URL"                    = "https://github.com/login/oauth"
 		"HOMEPAGE_URL"                        = "https://${var.prefix}-${var.app_service_name}.azurewebsites.net"
 		"KEY_VAULT_NAME"                      = azurerm_key_vault.main.name
