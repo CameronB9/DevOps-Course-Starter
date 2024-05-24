@@ -84,8 +84,8 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/todo-app:prod
           target: production
       -
-        name: ls -la
-        run: ls -la
+        name: Terraform init
+        run: terraform init
       -
         name: Terraform apply
         env:
