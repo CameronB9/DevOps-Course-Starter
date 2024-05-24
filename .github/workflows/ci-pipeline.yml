@@ -36,6 +36,7 @@ jobs:
       -
         name: Create test-ci workspace
         run: terraform workspace new e2e_test
+        continue-on-error: true
       - 
         name: Setup test environment - terraform apply
         env:
