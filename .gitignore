@@ -123,3 +123,6 @@ secrets.yml
 
 ### Mongo DB Docker Volume ###
 dev_db
+
+### Terraform ###
+*terraform*
