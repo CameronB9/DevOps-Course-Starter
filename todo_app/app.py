@@ -187,8 +187,8 @@ def create_app():
             roles = Roles
         )
 
-    @User.check_permission('admin')
     @app.route('/user/management/update/<id>', methods=['POST'])
+    @User.check_permission('admin')
     def update_user(id):
         role = request.form.get('role')
         user_management = UserManagement()

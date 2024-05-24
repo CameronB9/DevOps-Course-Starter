@@ -28,8 +28,7 @@ def generate_mock_data(items = 10, num_todo = 5, modified_today = 5):
 @pytest.fixture
 def view_model() -> ViewModel:
     data = generate_mock_data()
-    error = ""
-    return ViewModel(data, error)
+    return ViewModel(data)
 
 def test_completed_items_returns_the_correct_data(view_model: ViewModel):
     completed_items = view_model.completed_items

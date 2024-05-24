@@ -1,4 +1,5 @@
 from typing import List
+from functools import wraps
 
 from flask_login import UserMixin, current_user
 from flask import redirect
@@ -29,23 +30,9 @@ class User(UserMixin):
         return self._role if self._role is not None else Roles.reader
 
     @staticmethod
-    def _check_permission(fn):
-
-
-        def wrapper(*args, **kwargs):
-            user: User = current_user
-            if user and user.role != Roles.reader:
-                return fn(*args, **kwargs)
-            
-            return redirect('/?e=PERMISSION_ERROR')
-        wrapper.__name__ = fn.__name__
-        return wrapper
-
-    @staticmethod
     def check_permission(level):
-
         def wrapper(fn):
-
+            @wraps(fn)
             def decorator(*args, **kwargs):
                 user: User = current_user
                 if user:
@@ -54,7 +41,6 @@ class User(UserMixin):
                         return fn(*args, **kwargs)
                 
                 return redirect('/?e=PERMISSION_ERROR')
-            decorator.__name__ = fn.__name__
             return decorator
 
         return wrapper
