@@ -7,6 +7,8 @@ def get_secrets() -> None:
     secret_names = [
         ('MONGO-CONNECTION-STRING', 'MONGO_CONNECTION_STRING'),
         ('MONGO-DATABASE-NAME', 'MONGO_DATABASE_NAME'),
+        ('GITHUB-OAUTH-CLIENT-ID', 'GITHUB_OAUTH_CLIENT_ID'),
+        ('GITHUB-OAUTH-CLIENT-SECRET', 'GITHUB_OAUTH_CLIENT_SECRET')
     ]
     
     key_vault_name = os.environ['KEY_VAULT_NAME']

@@ -1,10 +1,10 @@
+from datetime import datetime, timedelta
+from typing import List
+import pytest
+
 from todo_app.data.mongo_item import MongoItem
 from todo_app.view_models.index_view_model import ViewModel
-from datetime import datetime, timedelta
 
-from typing import List
-
-import pytest
 
 def generate_mock_data(items = 10, num_todo = 5, modified_today = 5):
 
@@ -72,7 +72,7 @@ def test_status_messages_returns_the_correct_message(
     test_input: List[MongoItem], 
     expected: str
 ):
-    view_model = ViewModel(test_input)
+    view_model = ViewModel(test_input, "")
 
     status_message = view_model.item_status_message
 

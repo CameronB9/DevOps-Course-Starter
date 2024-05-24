@@ -7,59 +7,67 @@
 		<p class="lead">Just another to-do app.</p>
 	</div>
 	<div class="row">
+		{% if view_model.error != None %}
+			<div class="col-md-12">
+				<div class="alert alert-danger" role="alert">
+					{{ view_model.render_error() }}
+				</div>
+			</div>
+		{% endif %}
 		<div class="col-md-12">
-			<form method="post" action="/todo/add" class="border py-3 px-4 mb-5">
-				<h6 class="mb-3">Add New To Do</h6>
-				<div class="mb-3">
-					<div class="form-group">
-						<label for="new-todo-item">
-							Name
-						</label>
-						<input 
-							type="text" 
-							class="form-control" 
-							id="todo-name" 
-							name="todo-name" 
-							placeholder="Get stuff done!"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="todo-description">
-							Description
-						</label>
-						<input 
-							type="text" 
-							class="form-control" 
-							id="todo-description" 
-							name="todo-description" 
-							placeholder="Description"
-						/>
-					</div>
-					<div class="form-group">
-						<label for="todo-due-date">Due Date</label>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span 
-									class="input-group-text material-icons" 
-									id="basic-addon1">
-									event
-								<span>
-							</div>
+			{% if user_view_model.has_write_permission %}
+				<form method="post" action="/todo/add" class="border py-3 px-4 mb-5">
+					<h6 class="mb-3">Add New To Do</h6>
+					<div class="mb-3">
+						<div class="form-group">
+							<label for="new-todo-item">
+								Name
+							</label>
 							<input 
 								type="text" 
 								class="form-control" 
-								placeholder="dd/mm/yyyy" 
-								id="todo-due-date"
-								name="todo-due-date"
+								id="todo-name" 
+								name="todo-name" 
+								placeholder="Get stuff done!"
 							/>
 						</div>
+						<div class="form-group">
+							<label for="todo-description">
+								Description
+							</label>
+							<input 
+								type="text" 
+								class="form-control" 
+								id="todo-description" 
+								name="todo-description" 
+								placeholder="Description"
+							/>
+						</div>
+						<div class="form-group">
+							<label for="todo-due-date">Due Date</label>
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<span 
+										class="input-group-text material-icons" 
+										id="basic-addon1">
+										event
+									<span>
+								</div>
+								<input 
+									type="text" 
+									class="form-control" 
+									placeholder="dd/mm/yyyy" 
+									id="todo-due-date"
+									name="todo-due-date"
+								/>
+							</div>
+						</div>
+						<div class="">
+							<button class="btn btn-primary" id="add-todo" type="submit">Add Todo</button>
+						</div>
 					</div>
-					<div class="">
-						<button class="btn btn-primary" id="add-todo" type="submit">Add Todo</button>
-					</div>
-				</div>
-			</form>
-
+				</form>
+			{% endif %}
 			<h2>
 				Items
 				<span class="badge badge-primary">
@@ -82,13 +90,15 @@
 									{% endif %}
 									{% for item in item_list.items %}
 										<li class="list-group-item {{ 'complete' if item.is_done == True else '' }}">
-											<form method="post" action="/todo/change-status/{{ item._id }}">
-												<button title="Mark {{ item.name }} as {{ 'Completed' if item.is_done == False else 'To Do' }}">
-													<span class="material-icons complete-btn">
-														{{ view_model.render_checkbox_icon(item) }}
-													</span>
-												</button>
-											</form>
+											{% if user_view_model.has_write_permission %}
+												<form method="post" action="/todo/change-status/{{ item._id }}">
+													<button title="Mark {{ item.name }} as {{ 'Completed' if item.is_done == False else 'To Do' }}">
+														<span class="material-icons complete-btn">
+															{{ view_model.render_checkbox_icon(item) }}
+														</span>
+													</button>
+												</form>
+											{% endif %}
 											<h6 class="d-inline-block">
 												{{ item.name }}
 												{% if item.due_date %}
@@ -100,13 +110,15 @@
 											{% if item.description %}
 												<p class="mb-0 pl-2 text-secondary">{{ item.description }}</p>
 											{% endif %}
-											<form method="post" action="/todo/delete/{{ item._id }}" id="delete-form">
-												<button class="delete-btn" title="Delete: {{ item.name }}">
-													<span class="material-icons">
-														delete
-													</span>
-												</button>
-											</form>
+											{% if user_view_model.has_write_permission %}
+												<form method="post" action="/todo/delete/{{ item._id }}" id="delete-form">
+													<button class="delete-btn" title="Delete: {{ item.name }}">
+														<span class="material-icons">
+															delete
+														</span>
+													</button>
+												</form>
+											{% endif %}
 										</li>
 									{% endfor %}
 										{% if item_list.is_hidden %}

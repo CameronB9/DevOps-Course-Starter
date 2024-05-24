@@ -85,4 +85,3 @@ class DB:
         self.collection.delete_one({ '_id': item._id })
 
     
-
