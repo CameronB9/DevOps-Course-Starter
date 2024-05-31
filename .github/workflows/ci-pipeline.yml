@@ -50,13 +50,13 @@ jobs:
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
           -e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
           -e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
-          -e CREATE_TEMP_APP=False \
+          -e E2E_CREATE_TEMP_APP=False \
           -e E2E_TEST_URL="$(terraform output -raw webapp_url)" \
           e2e-ci
         if: github.event.schedule != '08 13 * * *'
       - 
         name: Destroy terraform test environment
-        run: terraform destroy -auto-approve
+        run: cd terraform/modules/test && terraform destroy -auto-approve
         env:
           TF_VAR_prefix: e2e-temp
           TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
