@@ -32,20 +32,19 @@ jobs:
         if: github.ref == 'refs/heads/REMOVE_BEFORE_PULL_REQUEST' && github.event_name == 'push' && github.event.schedule != '08 13 * * *'
       - 
         name: E2E test app terraform init
-        run: terraform init
-      -
-        name: Create test-ci workspace
-        run: terraform workspace new e2e_test
-        continue-on-error: true
+        run: cd terraform/modules/test && terraform init
       - 
         name: Setup test environment - terraform apply
         env:
-          TF_VAR_prefix: e2e-temp
+          TF_VAR_login_disabled: "True"
           TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
           TF_VAR_github_oauth_client_id: ${{ secrets.TF_VAR_TEST_GITHUB_OAUTH_CLIENT_ID }}
           TF_VAR_github_oauth_client_secret: ${{ secrets.TF_VAR_TEST_GITHUB_OAUTH_CLIENT_SECRET }}
           TF_VAR_mongo_database_name: ${{ secrets.TF_VAR_MONGO_DATABASE_NAME }}
         run: terraform apply -auto-approve
+      -
+        name: Navigate back to base dir
+        run: cd ../../../
       - 
         name: Run e2e tests
         run: | 

@@ -125,4 +125,6 @@ secrets.yml
 dev_db
 
 ### Terraform ###
-*terraform*
+.terraform*
+*.tfvars
+*.tfstate*

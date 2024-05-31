@@ -1,28 +1,3 @@
-terraform {
-	required_providers {
-		azurerm = {
-			source = "hashicorp/azurerm"
-			version = ">= 3.8"
-		}
-	}
-
-	backend "azurerm" {
-		resource_group_name = "Cohort28_CamBod_ProjectExercise"
-		storage_account_name = "cbtodoapptfstate"
-		container_name = "cbtodoapptfstatectr"
-		key = "terraform.tfstate"
-	}
-}
-
-provider "azurerm" {
-	features {
-		key_vault {
-			purge_soft_delete_on_destroy = true
-			recover_soft_deleted_key_vaults = true
-		}
-	}
-}
-
 data "azurerm_client_config" "main" {}
 
 data "azurerm_resource_group" "main" {
@@ -70,7 +45,7 @@ resource "azurerm_cosmosdb_account" "db" {
 	}
 
 	lifecycle {
-		#prevent_destroy = true
+		prevent_destroy = var.prevent_db_destroy == "true" ? true : false
 	}
 
 }
@@ -126,15 +101,13 @@ data azurerm_linux_web_app "main" {
 }
 
 resource "azurerm_key_vault" "main" {
-	name                        = "${var.prefix}-cb-todo-tf"
+	name                        = "${var.prefix}-cb-todo-tf${var.key_vault_rand_str}"
 	location                    = data.azurerm_resource_group.main.location
 	resource_group_name         = data.azurerm_resource_group.main.name
 	tenant_id                   = data.azurerm_client_config.main.tenant_id
 	soft_delete_retention_days  = 7
 	purge_protection_enabled    = false
 	sku_name                    = "standard"
-
-	
 }
 
 resource "azurerm_key_vault_access_policy" "user" {
@@ -150,7 +123,7 @@ resource "azurerm_key_vault_access_policy" "main" {
 	object_id    = data.azurerm_linux_web_app.main.identity[0].principal_id
 	key_vault_id = azurerm_key_vault.main.id
 
-	secret_permissions = ["Get", "List"]
+	secret_permissions = ["Get", "List", "Set", "Delete", "Purge"]
 }
 
 
@@ -173,7 +146,6 @@ resource "azurerm_key_vault_secret" "github_oauth_client_secret" {
 
 resource "azurerm_key_vault_secret" "mongo_connection_string" {
 	name = "MONGO-CONNECTION-STRING"
-	#value = var.mongo_connection_string
 	value = azurerm_cosmosdb_account.db.primary_mongodb_connection_string
 	key_vault_id = azurerm_key_vault.main.id
 	depends_on = [ azurerm_key_vault_access_policy.user, azurerm_cosmosdb_account.db ]

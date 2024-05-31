@@ -30,3 +30,14 @@ variable "github_oauth_client_secret" {
 variable "mongo_database_name" {
   sensitive = true
 }
+
+variable "key_vault_rand_str" {
+  description = "random string for test key vault"
+  default = ""
+}
+
+variable "prevent_db_destroy" {
+  description = "For the MongoDB option prevent_destroy"
+  default = "true"
+  type = bool
+}
