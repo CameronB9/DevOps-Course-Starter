@@ -39,6 +39,7 @@ def app_with_temp_db():
 
         thread.join(1)
         delete_db()
+    yield
 
 
 @pytest.fixture(scope="module")
