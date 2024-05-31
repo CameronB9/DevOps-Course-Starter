@@ -45,7 +45,8 @@ resource "azurerm_cosmosdb_account" "db" {
 	}
 
 	lifecycle {
-		prevent_destroy = var.prevent_db_destroy == "true" ? true : false
+		//prevent_destroy = var.prevent_db_destroy == "true" ? true : false
+		prevent_destroy = false
 	}
 
 }
