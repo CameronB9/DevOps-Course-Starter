@@ -48,8 +48,6 @@ jobs:
           docker-compose -f docker-compose.test-ci.yml run \
           -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-          -e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
-          -e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
           -e E2E_CREATE_TEMP_APP=False \
           -e E2E_TEST_URL="$(terraform output -raw webapp_url)" \
           e2e-ci
