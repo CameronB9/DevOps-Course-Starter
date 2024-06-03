@@ -44,7 +44,7 @@ jobs:
         run: cd terraform/modules/test && terraform apply -auto-approve
       -
         name: print URL
-        run: terraform output -raw webapp_url
+        run: cd terraform/modules/test && terraform output -raw webapp_url
       - 
         name: Run e2e tests
         run: | 
