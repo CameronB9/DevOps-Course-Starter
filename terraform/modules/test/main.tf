@@ -34,6 +34,7 @@ terraform {
 module "base" {
   source = "../base"
   prefix = "test"
+  login_disabled = "True"
   mongo_database_name = var.mongo_database_name
   secret_key = var.secret_key
   github_oauth_client_id = var.github_oauth_client_id
