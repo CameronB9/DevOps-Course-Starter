@@ -52,7 +52,7 @@ jobs:
           -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
           -e E2E_CREATE_TEMP_APP=False \
-          -e E2E_TEST_URL="https://test-cb-todo-app-tf.azurewebsites.net/" \
+          -e E2E_TEST_URL="$(cd terraform/modules/test && terraform output -raw webapp_url)" \
           e2e-ci
         if: github.event.schedule != '08 13 * * *'
       - 
@@ -120,7 +120,7 @@ jobs:
           target: production
       -
         name: Terraform init
-        run: terraform init
+        run: cd terraform/modules/prod && terraform init
       -
         name: Terraform apply
         env:
@@ -129,9 +129,9 @@ jobs:
           TF_VAR_github_oauth_client_id: ${{ secrets.TF_VAR_GITHUB_OAUTH_CLIENT_ID }}
           TF_VAR_github_oauth_client_secret: ${{ secrets.TF_VAR_GITHUB_OAUTH_CLIENT_SECRET }}
           TF_VAR_mongo_database_name: ${{ secrets.TF_VAR_MONGO_DATABASE_NAME }}
-        run: terraform apply -auto-approve
+        run: cd terraform/modules/prod && terraform apply -auto-approve
       -
         name: Publish to Azure
-        run: curl -dH -X POST "$(terraform output -raw cd_webhook)"
+        run: curl -dH -X POST "$(cd terraform/modules/prod && terraform output -raw cd_webhook)"
 
       
