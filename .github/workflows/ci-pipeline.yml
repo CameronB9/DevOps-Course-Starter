@@ -96,8 +96,7 @@ jobs:
     name: Publish to Docker Hub and deploy to Azure
     runs-on: ubuntu-latest
     needs: build
-    # Temp
-    if: github.ref == 'refs/heads/exercise-12' && github.event_name == 'push' && github.event.schedule != '08 13 * * *'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.event.schedule != '08 13 * * *'
     steps:
       - uses: actions/checkout@v2
       -
