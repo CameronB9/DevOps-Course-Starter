@@ -36,8 +36,10 @@ variable "key_vault_rand_str" {
   default = ""
 }
 
-variable "prevent_db_destroy" {
-  description = "For the MongoDB option prevent_destroy"
-  default = "true"
-  type = bool
+variable "db_account_name" {
+  description = "Name of db storage account"
+}
+
+variable "mongo_connection_string" {
+  description = "mongo DB connection string"  
 }

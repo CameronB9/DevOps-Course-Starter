@@ -23,6 +23,54 @@ terraform {
 	}
 }
 
+data "azurerm_resource_group" "main" {
+    name = "Cohort28_CamBod_ProjectExercise"
+}
+
+resource "azurerm_cosmosdb_account" "protected" {
+	name                = "${var.prefix}-cb-todo-app-db-acc-tf"
+	location            = data.azurerm_resource_group.main.location
+	resource_group_name = data.azurerm_resource_group.main.name
+	offer_type          = "Standard"
+	kind                = "MongoDB"
+
+	capabilities {
+		name = "EnableAggregationPipeline"
+	}
+
+	capabilities {
+		name = "mongoEnableDocLevelTTL"
+	}
+
+	capabilities {
+		name = "MongoDBv3.4"
+	}
+
+	capabilities {
+		name = "EnableMongo"
+	}
+
+	capabilities {
+		name = "EnableServerless"
+	}
+
+	consistency_policy {
+		consistency_level       = "BoundedStaleness"
+		max_interval_in_seconds = 300
+		max_staleness_prefix    = 100000
+	}
+
+	geo_location {
+		location          = data.azurerm_resource_group.main.location
+		failover_priority = 0
+	}
+
+	lifecycle {
+		prevent_destroy = true
+	}
+
+}
+
 module "base" {
   source = "../base"
   prefix = "prod"
@@ -30,4 +78,6 @@ module "base" {
   secret_key = var.secret_key
   github_oauth_client_id = var.github_oauth_client_id
   github_oauth_client_secret = var.github_oauth_client_secret
+  db_account_name = azurerm_cosmosdb_account.protected.name
+  mongo_connection_string = azurerm_cosmosdb_account.protected.primary_mongodb_connection_string
 }

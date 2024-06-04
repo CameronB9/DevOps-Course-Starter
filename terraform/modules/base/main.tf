@@ -4,57 +4,10 @@ data "azurerm_resource_group" "main" {
     name = "Cohort28_CamBod_ProjectExercise"
 }
 
-resource "azurerm_cosmosdb_account" "db" {
-	name                = "${var.prefix}-cb-todo-app-db-acc-tf"
-	location            = data.azurerm_resource_group.main.location
-	resource_group_name = data.azurerm_resource_group.main.name
-	offer_type          = "Standard"
-	kind                = "MongoDB"
-
-	#enable_automatic_failover = true
-
-	capabilities {
-		name = "EnableAggregationPipeline"
-	}
-
-	capabilities {
-		name = "mongoEnableDocLevelTTL"
-	}
-
-	capabilities {
-		name = "MongoDBv3.4"
-	}
-
-	capabilities {
-		name = "EnableMongo"
-	}
-
-	capabilities {
-		name = "EnableServerless"
-	}
-
-	consistency_policy {
-		consistency_level       = "BoundedStaleness"
-		max_interval_in_seconds = 300
-		max_staleness_prefix    = 100000
-	}
-
-	geo_location {
-		location          = data.azurerm_resource_group.main.location
-		failover_priority = 0
-	}
-
-	lifecycle {
-		//prevent_destroy = var.prevent_db_destroy == "true" ? true : false
-		prevent_destroy = false
-	}
-
-}
-
 resource "azurerm_cosmosdb_mongo_database" "db" {
 	name = var.mongo_database_name
 	resource_group_name = data.azurerm_resource_group.main.name
-	account_name = azurerm_cosmosdb_account.db.name
+	account_name = var.db_account_name
 }
 
 resource "azurerm_service_plan" "main" {
@@ -102,7 +55,7 @@ data azurerm_linux_web_app "main" {
 }
 
 resource "azurerm_key_vault" "main" {
-	name                        = "${var.prefix}-cb-todo-tf${var.key_vault_rand_str}"
+	name                        = "${var.prefix}-cbt-tf${var.key_vault_rand_str}"
 	location                    = data.azurerm_resource_group.main.location
 	resource_group_name         = data.azurerm_resource_group.main.name
 	tenant_id                   = data.azurerm_client_config.main.tenant_id
@@ -147,9 +100,9 @@ resource "azurerm_key_vault_secret" "github_oauth_client_secret" {
 
 resource "azurerm_key_vault_secret" "mongo_connection_string" {
 	name = "MONGO-CONNECTION-STRING"
-	value = azurerm_cosmosdb_account.db.primary_mongodb_connection_string
+	value = var.mongo_connection_string
 	key_vault_id = azurerm_key_vault.main.id
-	depends_on = [ azurerm_key_vault_access_policy.user, azurerm_cosmosdb_account.db ]
+	depends_on = [ azurerm_key_vault_access_policy.user]
 }
 
 

@@ -1,3 +1,8 @@
+variable "prefix" {
+  description = "resource name prefix"
+  default = "prod"
+}
+
 variable "app_service_name" {
     description = "App Service Name"
     default = "cb-todo-app-tf"
