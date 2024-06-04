@@ -1,6 +1,6 @@
 variable "prefix" {
   description = "resource name prefix"
-  default = "prod"
+  default = "test"
 }
 
 variable "app_service_name" {
