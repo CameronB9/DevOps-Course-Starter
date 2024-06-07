@@ -312,8 +312,45 @@ curl -dH -X POST "https://\$<deployment_username>:<deployment_password>@<webapp_
 
 The dollar sign will need to be escaped using a backslash: `\$`. The response to the curl command will contain a link to a log-stream.
 
+## Terraform
+The Azure resources are managed by terraform. The configuration can be found in the `terraform/modules` directory. There are 2 different configurations which use the base module. The base module accepts a variable parameter `prefix` which gets appended to the start of the resource name:
+
+```
+// app service created by the prod configuration
+prod-cb-todo-app-sp-tf
+// app service created by the test configuration
+test-cb-todo-app-sp-tf
+```
+
+The prod configuration is used for the production app. It contains it's own configuration for the database storage account with destroy protection enabled to avoid the production database being deleted. 
+Production deployment is automated in the CI Pipeline, to run it manually:
+
+```bash
+cd terraform/modules/prod && terraform apply
+```
+
+The test configuration is mainly used within the CI pipeline to create a test environment that E2E 
+tests are run against, it then gets destroyed. It also has a separate db account that has destroy
+ protection enabled. to run it manually, run the following command:
+
+ ```bash
+ cd terraform/modules/test && terraform apply
+ ```
+ 
+ Both can be destroyed by running the following command:
+
+ ```bash
+cd terraform/modules/<module> && terraform destroy
+ ```
+
+The terraform state is stored in an azure storage account. There is separate state for test and 
+prod configurations. 
+
+
 ## Deployment to Azure (CI Pipeline)
 The CI Pipeline automatically publishes the application to Azure. This only happens when the target branch is main and the event type is push (this occurs after a pull request is merged or direct push which is not recommend).  
+
+The CI pipeline runs also a terraform apply to automatically update any changes in the terraform config.
 
 ## Migrating Trello Data to Mongo DB
 
