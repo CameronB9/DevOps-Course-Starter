@@ -86,7 +86,6 @@ resource "azurerm_key_vault_secret" "github_oauth_client_id" {
 	name = "GITHUB-OAUTH-CLIENT-ID"
 	value = var.github_oauth_client_id
 	key_vault_id = azurerm_key_vault.main.id
-	depends_on = [ azurerm_key_vault_access_policy.user ]
 }
 
 
@@ -94,7 +93,6 @@ resource "azurerm_key_vault_secret" "github_oauth_client_secret" {
 	name = "GITHUB-OAUTH-CLIENT-SECRET"
 	value = var.github_oauth_client_secret
 	key_vault_id = azurerm_key_vault.main.id
-	depends_on = [ azurerm_key_vault_access_policy.user ]
 }
 
 
@@ -102,7 +100,6 @@ resource "azurerm_key_vault_secret" "mongo_connection_string" {
 	name = "MONGO-CONNECTION-STRING"
 	value = var.mongo_connection_string
 	key_vault_id = azurerm_key_vault.main.id
-	depends_on = [ azurerm_key_vault_access_policy.user]
 }
 
 
@@ -110,6 +107,5 @@ resource "azurerm_key_vault_secret" "mongo_database_name" {
 	name = "MONGO-DATABASE-NAME"
 	value = var.mongo_database_name
 	key_vault_id = azurerm_key_vault.main.id
-	depends_on = [ azurerm_key_vault_access_policy.user ]
 }
 

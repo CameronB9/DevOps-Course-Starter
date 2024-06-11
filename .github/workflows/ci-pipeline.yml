@@ -31,9 +31,11 @@ jobs:
         if: github.event.schedule != '08 13 * * *'
       - 
         name: E2E test app terraform init
-        run: cd terraform/modules/test && terraform init
+        working-directory: terraform/modules/test
+        run: terraform init
       - 
         name: Setup test environment - terraform apply
+        working-directory: terraform/modules/test
         env:
           TF_VAR_login_disabled: "True"
           TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
@@ -53,7 +55,8 @@ jobs:
         if: github.event.schedule != '08 13 * * *'
       - 
         name: Destroy terraform test environment
-        run: cd terraform/modules/test && terraform destroy -auto-approve
+        working-directory: terraform/modules/test
+        run: terraform destroy -auto-approve
         env:
           TF_VAR_prefix: e2e-temp
           TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
@@ -114,18 +117,21 @@ jobs:
           target: production
       -
         name: Terraform init
-        run: cd terraform/modules/prod && terraform init
+        working-directory: terraform/modules/prod
+        run: terraform init
       -
         name: Terraform apply
+        working-directory: terraform/modules/prod
         env:
           TF_VAR_prefix: prod
           TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
           TF_VAR_github_oauth_client_id: ${{ secrets.TF_VAR_GITHUB_OAUTH_CLIENT_ID }}
           TF_VAR_github_oauth_client_secret: ${{ secrets.TF_VAR_GITHUB_OAUTH_CLIENT_SECRET }}
           TF_VAR_mongo_database_name: ${{ secrets.TF_VAR_MONGO_DATABASE_NAME }}
-        run: cd terraform/modules/prod && terraform apply -auto-approve
+        run: terraform apply -auto-approve
       -
         name: Publish to Azure
-        run: curl -dH -X POST "$(cd terraform/modules/prod && terraform output -raw cd_webhook)"
+        working-directory: terraform/modules/prod
+        run: curl -dH -X POST "$(terraform output -raw cd_webhook)"
 
       
