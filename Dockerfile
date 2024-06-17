@@ -9,9 +9,6 @@ FROM base as development
     COPY pyproject.toml /app/todo-app/
     RUN poetry install
     ENTRYPOINT ["poetry", "run", "flask", "run"]
-FROM development as debug
-    COPY .vscode/launch.json /app/todo-app/.vscode/
-    ENTRYPOINT [ "tail", "-f", "/dev/null" ]
 
 FROM development as test-dev
     RUN poetry add setuptools
@@ -23,6 +20,10 @@ FROM development as test-dev
     && rm /etc/apt/sources.list.d/google-chrome.list \  
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
     ENTRYPOINT ["poetry", "run", "pytest-watch", "--poll"]
+
+FROM test-dev as debug
+    COPY .vscode/launch.json /app/todo-app/.vscode/
+    ENTRYPOINT [ "tail", "-f", "/dev/null" ]
 
 FROM test-dev as test-ci
     ENTRYPOINT [ "poetry", "run", "pytest" ]

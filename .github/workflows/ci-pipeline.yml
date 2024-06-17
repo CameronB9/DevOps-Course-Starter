@@ -14,31 +14,64 @@ on:
       - '.env.j2'
   schedule:
     - cron: '08 13 * * *'
-
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 jobs:
   build:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      -
+        uses: actions/checkout@v2
       - name: Run unit and integration tests
         run: docker-compose -f docker-compose.test-ci.yml run test-ci
         if: github.event.schedule != '08 13 * * *'
-      - name: Run e2e tests
+      - 
+        name: E2E test app terraform init
+        working-directory: terraform/modules/test
+        run: terraform init
+      - 
+        name: Setup test environment - terraform apply
+        working-directory: terraform/modules/test
+        env:
+          TF_VAR_login_disabled: "True"
+          TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
+          TF_VAR_github_oauth_client_id: ${{ secrets.TF_VAR_TEST_GITHUB_OAUTH_CLIENT_ID }}
+          TF_VAR_github_oauth_client_secret: ${{ secrets.TF_VAR_TEST_GITHUB_OAUTH_CLIENT_SECRET }}
+          TF_VAR_mongo_database_name: ${{ secrets.TF_VAR_MONGO_DATABASE_NAME }}
+        run: terraform apply -auto-approve
+      - 
+        name: Run e2e tests
         run: | 
           docker-compose -f docker-compose.test-ci.yml run \
           -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
-          -e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
-          -e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
+          -e E2E_CREATE_TEMP_APP=False \
+          -e E2E_TEST_URL="$(cd terraform/modules/test && terraform output -raw webapp_url)" \
           e2e-ci
         if: github.event.schedule != '08 13 * * *'
-      - name: Run Snyk to check for vulnerabilities
+      - 
+        name: Destroy terraform test environment
+        working-directory: terraform/modules/test
+        run: terraform destroy -auto-approve
+        env:
+          TF_VAR_prefix: e2e-temp
+          TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
+          TF_VAR_github_oauth_client_id: ${{ secrets.TF_VAR_TEST_GITHUB_OAUTH_CLIENT_ID }}
+          TF_VAR_github_oauth_client_secret: ${{ secrets.TF_VAR_TEST_GITHUB_OAUTH_CLIENT_SECRET }}
+          TF_VAR_mongo_database_name: ${{ secrets.TF_VAR_MONGO_DATABASE_NAME }}
+        if: ${{ always() }}
+      - 
+        name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/python-3.10@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Send custom JSON data to Slack workflow
+      - 
+        name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
@@ -60,12 +93,15 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         if: ${{ always() }}
+
+
   publish:
     name: Publish to Docker Hub and deploy to Azure
     runs-on: ubuntu-latest
     needs: build
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push' && github.event.schedule != '08 13 * * *'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.event.schedule != '08 13 * * *'
     steps:
+      - uses: actions/checkout@v2
       -
         name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -80,7 +116,22 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/todo-app:prod
           target: production
       -
+        name: Terraform init
+        working-directory: terraform/modules/prod
+        run: terraform init
+      -
+        name: Terraform apply
+        working-directory: terraform/modules/prod
+        env:
+          TF_VAR_prefix: prod
+          TF_VAR_secret_key: ${{ secrets.TF_VAR_SECRET_KEY }}
+          TF_VAR_github_oauth_client_id: ${{ secrets.TF_VAR_GITHUB_OAUTH_CLIENT_ID }}
+          TF_VAR_github_oauth_client_secret: ${{ secrets.TF_VAR_GITHUB_OAUTH_CLIENT_SECRET }}
+          TF_VAR_mongo_database_name: ${{ secrets.TF_VAR_MONGO_DATABASE_NAME }}
+        run: terraform apply -auto-approve
+      -
         name: Publish to Azure
-        run: curl -dH -X POST '${{ secrets.AZURE_WEBHOOK_URL }}'
+        working-directory: terraform/modules/prod
+        run: curl -dH -X POST "$(terraform output -raw cd_webhook)"
 
       

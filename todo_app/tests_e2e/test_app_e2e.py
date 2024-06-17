@@ -1,3 +1,4 @@
+from functools import wraps
 import os
 from time import sleep
 from threading import Thread
@@ -14,13 +15,10 @@ from todo_app import app
 db_name = 'E2E_TEST_todo-db'
 port = "5867"
 
-
-
 def delete_db():
     client = pymongo.MongoClient(os.getenv('MONGO_CONNECTION_STRING'))
     client.drop_database(db_name)
 
-@pytest.fixture(scope='module')
 def app_with_temp_db():
     file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
@@ -39,6 +37,12 @@ def app_with_temp_db():
     thread.join(1)
     delete_db()
 
+@pytest.fixture(scope="module")
+def setup():
+    if os.environ["E2E_CREATE_TEMP_APP"] == "True":
+        return app_with_temp_db()
+    else:
+        return None
 
 @pytest.fixture(scope="module")
 def driver():
@@ -49,8 +53,11 @@ def driver():
     with webdriver.Chrome(options=options) as driver:
         yield driver
 
-def test_task_journey(driver: WebDriver, app_with_temp_db):
-    driver.get(f'http://localhost:{port}')
+def test_task_journey(driver: WebDriver, setup):
+    
+    url = os.environ["E2E_TEST_URL"]
+
+    driver.get(url)
     assert driver.title == 'To-Do App'
 
     input = driver.find_element(By.ID, 'todo-name')
