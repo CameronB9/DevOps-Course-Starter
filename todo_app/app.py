@@ -6,13 +6,15 @@ from datetime import datetime
 import random
 import string
 import requests
+from loggly.handlers import HTTPSHandler
+from logging import Formatter
 
 from todo_app.view_models.index_view_model import ViewModel
 from todo_app.view_models.user_view_model import UserViewModel
 from todo_app.data.db import DB
 from todo_app.data.mongo_item import MongoItem
 from todo_app.data.user_management import UserManagement
-from todo_app.user import Roles, User
+from todo_app.user import Roles, User, Actions
 
 from todo_app.flask_config import Config
 from todo_app.kv_secrets import get_secrets
@@ -21,8 +23,17 @@ def create_app():
     
     app = Flask(__name__, static_folder='static', static_url_path='')
     app.config.from_object(Config())
+    app.logger.setLevel(app.config['LOG_LEVEL'])
+
+    if app.config['LOGGLY_TOKEN'] is not None:
+        handler = HTTPSHandler(f'https://logs-01.loggly.com/inputs/{app.config["LOGGLY_TOKEN"]}/tag/todo-app')
+        handler.setFormatter(
+            Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s")
+        )
+        app.logger.addHandler(handler)
 
     if os.environ["FLASK_ENV"] == "production":
+        app.logger.info('environment is production, getting secrets from azure key vault')
         get_secrets()
 
 
@@ -46,11 +57,14 @@ def create_app():
 
         query_str = urlencode(params)
 
+        app.logger.info('redirecting user to GitHub to authenticate')
+
         return redirect(f'{os.environ["GITHUB_OAUTH_URL"]}/authorize?{query_str}')
 
 
     @login_manager.user_loader
     def load_user(user_id):
+        app.logger.info(f'loading user: {user_id}')
         user_management = UserManagement()
         user = user_management.get_user(user_id)
         return user
@@ -83,6 +97,7 @@ def create_app():
 
 
         if session['state'] != state:
+            app.logger.info('login/callback: state does not match, aborting login process')
             return redirect('/login/error')
 
         params = {
@@ -115,6 +130,8 @@ def create_app():
         user_management = UserManagement()
         user = user_management.get_user(user_id)
 
+        app.logger.info(f'logging in user: {user_id}')
+
         if user is None:
             num_users = len(user_management.get_users())
             role = Roles.admin if num_users == 0 else Roles.reader
@@ -126,8 +143,9 @@ def create_app():
 
     @app.route('/todo/add', methods=['POST'])
     @login_required
-    @User.check_permission('write')
+    @User.check_permission('write', app=app, action=Actions.add_todo)
     def add_todo():
+        app.logger.info('Adding new todo')
         name = request.form.get('todo-name')
         description = request.form.get('todo-description')
         date = request.form.get('todo-due-date')
@@ -152,8 +170,9 @@ def create_app():
 
     @app.route('/todo/change-status/<id>', methods=['POST'])
     @login_required
-    @User.check_permission('write')
+    @User.check_permission('write', app=app, action=Actions.update_status)
     def change_todo_status(id):
+        app.logger.info(f'Updating todo status: {id}')
         db = DB()
         item_to_update = db.get_item(id)
         item_to_update.update_status()
@@ -162,8 +181,9 @@ def create_app():
 
     @app.route('/todo/delete/<id>', methods=['POST'])
     @login_required
-    @User.check_permission('write')
+    @User.check_permission('write', app=app, action=Actions.delete_todo)
     def delete_todo(id):
+        app.logger.info(f'attempting to delete todo: {id}')
         db = DB()
         item_to_delete = db.get_item(id)
         db.delete_item(item_to_delete)
@@ -171,10 +191,11 @@ def create_app():
 
     @app.route('/login/error', methods=['GET'])
     def login_error():
-        return render_template('login_error.html')            
+        user_view_model = None
+        return render_template('login_error.html', user_view_model=user_view_model)
 
     @app.route('/user/management', methods=['GET'])
-    @User.check_permission('admin')
+    @User.check_permission('admin', app=app, action=Actions.view_users)
     def user_management():
 
         user_view_model = UserViewModel(current_user)
@@ -188,9 +209,11 @@ def create_app():
         )
 
     @app.route('/user/management/update/<id>', methods=['POST'])
-    @User.check_permission('admin')
+    @User.check_permission('admin', app=app, action=Actions.update_user_role)
     def update_user(id):
+        user: User = current_user
         role = request.form.get('role')
+        app.logger.info(f'user: {user.id} updated user {id} to role {role}')
         user_management = UserManagement()
         if role in Roles.list():
             user_management.update_user_role(id, role)
