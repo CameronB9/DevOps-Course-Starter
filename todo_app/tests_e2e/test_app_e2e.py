@@ -19,30 +19,29 @@ def delete_db():
     client = pymongo.MongoClient(os.getenv('MONGO_CONNECTION_STRING'))
     client.drop_database(db_name)
 
+@pytest.fixture(scope="module")
 def app_with_temp_db():
     file_path = find_dotenv('.env')
     load_dotenv(file_path, override=True)
     os.environ['MONGO_DATABASE_NAME'] = db_name
     os.environ['LOGIN_DISABLED'] = "True"
 
-    application = app.create_app()
+    application = None
 
-    thread = Thread(target=lambda: application.run(use_reloader=False, port=port))
-    thread.daemon = True
-    thread.start()
-    sleep(1)
+    if os.environ["E2E_CREATE_TEMP_APP"] == "True":
+        application = app.create_app()
+
+        thread = Thread(target=lambda: application.run(use_reloader=False, port=port))
+        thread.daemon = True
+        thread.start()
+        sleep(1)
 
     yield application
 
-    thread.join(1)
-    delete_db()
-
-@pytest.fixture(scope="module")
-def setup():
     if os.environ["E2E_CREATE_TEMP_APP"] == "True":
-        return app_with_temp_db()
-    else:
-        return None
+        thread.join(1)
+        delete_db()
+
 
 @pytest.fixture(scope="module")
 def driver():
@@ -53,7 +52,7 @@ def driver():
     with webdriver.Chrome(options=options) as driver:
         yield driver
 
-def test_task_journey(driver: WebDriver, setup):
+def test_task_journey(driver: WebDriver, app_with_temp_db):
     
     url = os.environ["E2E_TEST_URL"]
 

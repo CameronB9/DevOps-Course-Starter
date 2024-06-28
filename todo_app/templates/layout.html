@@ -82,31 +82,33 @@
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-      <a class="navbar-brand" href="/">To-Do App</a>
-      <ul class="navbar-nav navbar-dark">
-        <li class="nav-item">
-          <a class="nav-link" href="/">
-            Todos
-          </a>
-        </li>
-        {% if user_view_model.is_admin %}
+    {% if user_view_model %}
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+        <a class="navbar-brand" href="/">To-Do App</a>
+        <ul class="navbar-nav navbar-dark">
           <li class="nav-item">
-            <a class="nav-link" href="/user/management">
-              Users
+            <a class="nav-link" href="/">
+              Todos
             </a>
           </li>
-        {% endif %}
-      </ul>
-      <div class="logged-in-user">
-        <p class="mb-0">
-          Welcome <span>{{ user_view_model.user.username }}</span>
-        </p>
-        <p class="mb-0">
-          Role: <span>{{ user_view_model.user.role }}</span>
-        </p>
-      </div>
-    </nav>
+          {% if user_view_model.is_admin %}
+            <li class="nav-item">
+              <a class="nav-link" href="/user/management">
+                Users
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+        <div class="logged-in-user">
+          <p class="mb-0">
+            Welcome <span>{{ user_view_model.user.username }}</span>
+          </p>
+          <p class="mb-0">
+            Role: <span>{{ user_view_model.user.role }}</span>
+          </p>
+        </div>
+      </nav>
+    {% endif %}
 
     <div class="container body-content">
       {% block content %}{% endblock %}

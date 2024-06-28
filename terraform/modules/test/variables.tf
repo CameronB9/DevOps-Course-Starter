@@ -31,3 +31,8 @@ variable "github_oauth_client_secret" {
 variable "mongo_database_name" {
   sensitive = true
 }
+
+variable "log_level" {
+  description = "level of logging"
+  default = "DEBUG"
+}

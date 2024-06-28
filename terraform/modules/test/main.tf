@@ -90,4 +90,5 @@ module "base" {
   key_vault_rand_str = "-${random_string.azurerm_key_vault_name.result}"
   db_account_name = azurerm_cosmosdb_account.unprotected.name
   mongo_connection_string = azurerm_cosmosdb_account.unprotected.primary_mongodb_connection_string
+  log_level = var.log_level
 }
