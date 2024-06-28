@@ -26,6 +26,7 @@ def app_with_temp_db():
     os.environ['MONGO_DATABASE_NAME'] = db_name
     os.environ['LOGIN_DISABLED'] = "True"
 
+    application = None
 
     if os.environ["E2E_CREATE_TEMP_APP"] == "True":
         application = app.create_app()
@@ -35,8 +36,9 @@ def app_with_temp_db():
         thread.start()
         sleep(1)
 
-        yield application
+    yield application
 
+    if os.environ["E2E_CREATE_TEMP_APP"] == "True":
         thread.join(1)
         delete_db()
 
