@@ -42,6 +42,7 @@ resource "azurerm_linux_web_app" "main" {
 		"SECRET_KEY"                          = var.secret_key
 		"WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
 		"WEBSITES_PORT"                       = "80"
+		"LOG_LEVEL"                           = var.log_level
     }
 
 	identity {
