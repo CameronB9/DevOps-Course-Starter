@@ -43,6 +43,7 @@ resource "azurerm_linux_web_app" "main" {
 		"WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
 		"WEBSITES_PORT"                       = "80"
 		"LOG_LEVEL"                           = var.log_level
+		"LOGGLY_TOKEN"                        = var.loggly_token
     }
 
 	identity {

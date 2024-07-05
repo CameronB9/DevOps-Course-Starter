@@ -48,3 +48,8 @@ variable "log_level" {
   description = "level of logging"
   default = "ERROR"
 }
+
+variable "loggly_token" {
+  sensitive = true
+  default = ""
+}

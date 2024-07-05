@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from pythonjsonlogger.jsonlogger import JsonFormatter
 
@@ -25,3 +26,5 @@ class CustomJsonFormatter(JsonFormatter):
             log_record['level'] = log_record['level'].upper()
         else:
             log_record['level'] = record.levelname
+
+        log_record['FLASK_ENV'] = os.environ.get('FLASK_ENV')

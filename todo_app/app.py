@@ -7,9 +7,8 @@ import random
 import string
 import requests
 from loggly.handlers import HTTPSHandler
-from logging import Formatter, StreamHandler
+from logging import getLogger
 from prometheus_flask_exporter import PrometheusMetrics
-from pythonjsonlogger import jsonlogger
 
 from todo_app.logger_config import CustomJsonFormatter, LogCategory, LogAction
 from todo_app.view_models.index_view_model import ViewModel
@@ -31,16 +30,17 @@ def create_app():
     if os.environ["FLASK_ENV"] != "production":
         metrics = PrometheusMetrics(app)
 
-    if app.config['LOGGLY_TOKEN'] is not None:
+    # Convert to bool to account for empty string passed in from terraform test module
+    if bool(app.config['LOGGLY_TOKEN']):
         handler = HTTPSHandler(f'https://logs-01.loggly.com/inputs/{app.config["LOGGLY_TOKEN"]}/tag/todo-app')
-        formatter = CustomJsonFormatter('%(timestamp)s %(level)s %(name)s %(message)s')
+        formatter = CustomJsonFormatter('%(timestamp)s %(level)s %(name)s %(message)s %(FLASK_ENV)s')
         handler.setFormatter(formatter)
         app.logger.addHandler(handler)
+        getLogger('werkzeug').addHandler(HTTPSHandler(f'https://logs-01.loggly.com/inputs/{app.config["LOGGLY_TOKEN"]}/tag/todo-app-requests'))
 
     if os.environ["FLASK_ENV"] == "production":
         app.logger.info('environment is production, getting secrets from azure key vault', extra={ "category": LogCategory.setup })
         get_secrets()
-
 
 
     login_manager = LoginManager()
