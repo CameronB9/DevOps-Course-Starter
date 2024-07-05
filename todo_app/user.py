@@ -5,6 +5,8 @@ from flask import Flask
 from flask_login import UserMixin, current_user
 from flask import redirect
 
+from todo_app.logger_config import LogAction
+
 class Roles:
     admin = 'admin'
     writer = 'writer'
@@ -49,7 +51,13 @@ class User(UserMixin):
                     if condition:
                         return fn(*args, **kwargs)
 
-                app.logger.warn(f'user {user.id} with level {user.role} does not have permission to perform action {action}')
+                app.logger.info({
+                    'message': f'user does not have permission to perform action',
+                    "user_id": user.id,
+                    "user_role": user.role,
+                    "action": action,
+                    "action_type": LogAction.permission
+                })
 
                 return redirect('/?e=PERMISSION_ERROR')
             return decorator

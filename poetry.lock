@@ -818,6 +818,35 @@ redis = ["redis"]
 tests = ["pytest (>=5.4.1)", "pytest-cov (>=2.8.1)", "pytest-mypy (>=0.8.0)", "pytest-timeout (>=2.1.0)", "redis", "sphinx (>=6.0.0)", "types-redis"]
 
 [[package]]
+name = "prometheus-client"
+version = "0.20.0"
+description = "Python client for the Prometheus monitoring system."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "prometheus_client-0.20.0-py3-none-any.whl", hash = "sha256:cde524a85bce83ca359cc837f28b8c0db5cac7aa653a588fd7e84ba061c329e7"},
+    {file = "prometheus_client-0.20.0.tar.gz", hash = "sha256:287629d00b147a32dcb2be0b9df905da599b2d82f80377083ec8463309a4bb89"},
+]
+
+[package.extras]
+twisted = ["twisted"]
+
+[[package]]
+name = "prometheus-flask-exporter"
+version = "0.23.0"
+description = "Prometheus metrics exporter for Flask"
+optional = false
+python-versions = "*"
+files = [
+    {file = "prometheus_flask_exporter-0.23.0-py3-none-any.whl", hash = "sha256:7a026b4fdd54ebeddb77589333efe3a1ec43c7c717468825b0b3e9b6c33f7e9e"},
+    {file = "prometheus_flask_exporter-0.23.0.tar.gz", hash = "sha256:e4e6beb1b8e1e164da6d70fe1edefc95ef184f113b5047f66f4b7262233da9c0"},
+]
+
+[package.dependencies]
+flask = "*"
+prometheus-client = "*"
+
+[[package]]
 name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
@@ -1029,6 +1058,17 @@ files = [
 
 [package.extras]
 cli = ["click (>=5.0)"]
+
+[[package]]
+name = "python-json-logger"
+version = "2.0.7"
+description = "A python library adding a json log formatter"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "python-json-logger-2.0.7.tar.gz", hash = "sha256:23e7ec02d34237c5aa1e29a070193a4ea87583bb4e7f8fd06d3de8264c4b2e1c"},
+    {file = "python_json_logger-2.0.7-py3-none-any.whl", hash = "sha256:f380b826a991ebbe3de4d897aeec42760035ac760345e57b812938dc8b35e2bd"},
+]
 
 [[package]]
 name = "pywin32"
@@ -1564,4 +1604,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "0f69d3f8bddf78c7feb9bd8b23b1e81942401978032c88ae1f034e3579c3c9e1"
+content-hash = "2c29940bd6da77e8e773a17ba3e56bea2323eb288d9dc36b1ab279018ad35dbf"
