@@ -359,3 +359,12 @@ A script has been setup to copy data from trello to mongo DB. In order for the s
 ```bash
 python scripts/migrate_trello_to_mongo.py
 ```
+
+## Application Logging
+HTTP and custom application logs are stored in [Loggly](https://documentation.solarwinds.com/en/success_center/loggly/content/admin/python-http.htm?cshid=loggly_python-http). By default only production logs get send to Loggly. To capture logs from running the app through docker locally, sign up for a Loggly account and [Generate a token](https://documentation.solarwinds.com/en/success_center/loggly/content/admin/customer-token-authentication-token.htm). Add the token in the `docker.env.dev` file:
+
+```bash
+LOGGLY_TOKEN=[loggly-token-here]
+```
+
+To correctly configure the production logs, create a secret in GitHub Actions called `TF_VAR_LOGGLY_TOKEN` which contains the Loggly token. The token gets passed into Terraform and is set as an environment variable in the app service settings.
