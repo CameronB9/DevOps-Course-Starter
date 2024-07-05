@@ -66,6 +66,7 @@ jobs:
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
           -e E2E_CREATE_TEMP_APP=True \
           -e E2E_TEST_URL=http://localhost:5867 \
+          -e LOG_LEVEL=DEBUG \
           e2e-ci
         if: github.event.schedule != '08 13 * * *' && github.event_name == 'push'
       - 
