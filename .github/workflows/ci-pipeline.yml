@@ -67,6 +67,8 @@ jobs:
           -e E2E_CREATE_TEMP_APP=True \
           -e E2E_TEST_URL=http://localhost:5867 \
           -e LOG_LEVEL=DEBUG \
+          -e MONGO_CONNECTION_STRING="${{ secrets.MONGO_CONNECTION_STRING }}" \
+          -e MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }} \
           e2e-ci
         if: github.event.schedule != '08 13 * * *' && github.event_name == 'push'
       - 
