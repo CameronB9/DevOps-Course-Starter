@@ -34,6 +34,8 @@ services:
     container_name: e2e_container
     image: todo-app:tests-e2e
     command: --ignore todo_app/tests
+    depends_on: 
+      - mongo-db
     env_file:
       - .env.docker.dev
     volumes:
@@ -48,3 +50,10 @@ services:
       - .env.docker.dev
     volumes:
       - ./dev_db:/data/db
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml

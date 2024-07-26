@@ -31,3 +31,7 @@ variable "github_oauth_client_secret" {
 variable "mongo_database_name" {
   sensitive = true
 }
+
+variable "loggly_token" {
+  sensitive = true
+}

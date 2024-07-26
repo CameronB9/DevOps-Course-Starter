@@ -43,3 +43,13 @@ variable "db_account_name" {
 variable "mongo_connection_string" {
   description = "mongo DB connection string"  
 }
+
+variable "log_level" {
+  description = "level of logging"
+  default = "ERROR"
+}
+
+variable "loggly_token" {
+  sensitive = true
+  default = ""
+}

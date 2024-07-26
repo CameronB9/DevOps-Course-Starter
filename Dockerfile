@@ -8,7 +8,7 @@ FROM base as development
     COPY poetry* /app/todo-app/
     COPY pyproject.toml /app/todo-app/
     RUN poetry install
-    ENTRYPOINT ["poetry", "run", "flask", "run"]
+    ENTRYPOINT ["poetry", "run", "flask", "run", "--host", "0.0.0.0"]
 
 FROM development as test-dev
     RUN poetry add setuptools

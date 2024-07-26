@@ -80,4 +80,5 @@ module "base" {
   github_oauth_client_secret = var.github_oauth_client_secret
   db_account_name = azurerm_cosmosdb_account.protected.name
   mongo_connection_string = azurerm_cosmosdb_account.protected.primary_mongodb_connection_string
+  loggly_token = var.loggly_token
 }
