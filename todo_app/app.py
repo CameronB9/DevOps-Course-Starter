@@ -172,7 +172,7 @@ def create_app():
 
     @app.route('/todo/add', methods=['POST'])
     @login_required
-    @User.check_permission('write', app=app, action=Actions.add_todo)
+    @User.check_permission('write', action=Actions.add_todo)
     def add_todo():
         name = request.form.get('todo-name')
         description = request.form.get('todo-description')
@@ -206,7 +206,7 @@ def create_app():
 
     @app.route('/todo/change-status/<id>', methods=['POST'])
     @login_required
-    @User.check_permission('write', app=app, action=Actions.update_status)
+    @User.check_permission('write', action=Actions.update_status)
     def change_todo_status(id):
 
         db = DB()
@@ -225,7 +225,7 @@ def create_app():
 
     @app.route('/todo/delete/<id>', methods=['POST'])
     @login_required
-    @User.check_permission('write', app=app, action=Actions.delete_todo)
+    @User.check_permission('write', action=Actions.delete_todo)
     def delete_todo(id):
 
         db = DB()
@@ -247,7 +247,7 @@ def create_app():
         return render_template('login_error.html', user_view_model=user_view_model)
 
     @app.route('/user/management', methods=['GET'])
-    @User.check_permission('admin', app=app, action=Actions.view_users)
+    @User.check_permission('admin', action=Actions.view_users)
     def user_management():
 
         user_view_model = UserViewModel(current_user)
@@ -261,7 +261,7 @@ def create_app():
         )
 
     @app.route('/user/management/update/<id>', methods=['POST'])
-    @User.check_permission('admin', app=app, action=Actions.update_user_role)
+    @User.check_permission('admin', action=Actions.update_user_role)
     def update_user(id):
         user: User = current_user
         role = request.form.get('role')

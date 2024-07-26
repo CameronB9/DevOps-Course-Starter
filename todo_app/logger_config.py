@@ -1,6 +1,8 @@
+from logging import getLogger
 import os
 from datetime import datetime
 from pythonjsonlogger.jsonlogger import JsonFormatter
+from flask import current_app
 
 class LogCategory:
     login = 'LOGIN'
@@ -28,3 +30,10 @@ class CustomJsonFormatter(JsonFormatter):
             log_record['level'] = record.levelname
 
         log_record['FLASK_ENV'] = os.environ.get('FLASK_ENV')
+
+
+def get_logger():
+    if current_app:
+        return current_app.logger
+    else:
+        return getLogger()
