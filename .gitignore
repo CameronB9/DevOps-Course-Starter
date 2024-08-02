@@ -121,6 +121,8 @@ env/
 secrets.yml
 .env.docker.dev
 
+### Docker ###
+*.img
 ### Mongo DB Docker Volume ###
 dev_db
 
