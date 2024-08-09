@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Run unit and integration tests
         run: | 
-          docker-compose -f docker-compose.test-ci.yml run \
+          docker compose -f docker-compose.test-ci.yml run \
           -e LOG_LEVEL=DEBUG \
           test-ci
         if: github.event.schedule != '08 13 * * *'
@@ -51,7 +51,7 @@ jobs:
       - 
         name: Run e2e tests (Terraformed test env)
         run: | 
-          docker-compose -f docker-compose.test-ci.yml run \
+          docker compose -f docker-compose.test-ci.yml run \
           -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
           -e E2E_CREATE_TEMP_APP=False \
@@ -61,7 +61,7 @@ jobs:
       - 
         name: Run e2e tests (local flask server)
         run: | 
-          docker-compose -f docker-compose.test-ci.yml run \
+          docker compose -f docker-compose.test-ci.yml run \
           -e FLASK_ENV=docker \
           -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
           -e E2E_CREATE_TEMP_APP=True \
