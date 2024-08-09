@@ -368,3 +368,84 @@ LOGGLY_TOKEN=[loggly-token-here]
 ```
 
 To correctly configure the production logs, create a secret in GitHub Actions called `TF_VAR_LOGGLY_TOKEN` which contains the Loggly token. The token gets passed into Terraform and is set as an environment variable in the app service settings.
+
+## Running the application in Minikube
+In order to run the application in minikube, make sure you have [kubectl](https://kubernetes.io/docs/tasks/tools/) and [minikube](https://minikube.sigs.k8s.io/docs/start/) installed. Run the minikube start command to spin up the cluster:
+
+```bash
+minikube start
+```
+
+The docker image needs to be loaded into the minikube image store. Build a docker image using the `docker-compose.prod.yml` file:
+
+```Bash
+docker-compose -f docker-compose.prod.yml build
+```
+
+The image tag should be `todo-app:prod`. This can be checked by running the image ls command:
+
+```Bash
+docker image ls
+```
+
+Once the image has been built, it can then be loaded into minikube:
+
+```Bash
+minikube image load todo-app:prod
+```
+
+If you encounter any issues adding the image to minikube, it can be done by saving the image to a file first:
+
+```Bash
+docker image save --output todo-app:prod.img todo-app:prod
+minikube image load todo-app:prod.img
+```
+Sensitive values are stored in a secret, this needs to be created in order for the app to work. Run the following command to create a secret:
+
+```bash
+kubectl create secret generic app-secrets \
+--from-literal=SECRET_KEY=[SECRET_KEY] \
+--from-literal=KEY_VAULT_NAME=[KEY_VAULT_NAME] \
+--from-literal=MONGO_CONNECTION_STRING=[MONGO_CONNECTION_STRING] \
+--from-literal=MONGO_DATABASE_NAME=[MONGO_DATABASE_NAME] \
+--from-literal=GITHUB_OAUTH_CLIENT_ID=[GITHUB_OAUTH_CLIENT_ID] \
+--from-literal=GITHUB_OAUTH_CLIENT_SECRET=[GITHUB_OAUTH_CLIENT_SECRET] \
+--from-literal=GITHUB_OAUTH_URL=[GITHUB_OAUTH_URL] \
+--from-literal=HOMEPAGE_URL=[HOMEPAGE_URL] \
+--from-literal=LOGGLY_TOKEN=[LOGGLY_TOKEN]
+```
+
+
+Run the following command to deploy a pod running the todo app image:
+
+```Bash
+kubectl apply -f deployment.yml
+```
+
+Run the following command to deploy the service:
+
+```Bash
+kubectl apply -f service.yml
+```
+
+To link up the minikube service with a port on localhost:
+
+```Bash
+kubectl port-forward service/module-14 5000:80
+```
+
+The localhost port should be 5000 in order for the application to work. The github OAuth app is configured to redirect to http://localhost:5000 after a user authenticates.
+
+### Troubleshooting Minikube
+
+Check the status of the pod is `Running` (use the --watch flag to see changes as they happen):
+
+```Bash
+kubectl get pods --watch
+```
+
+Check the pod logs for application errors. Run the previous command to list pods. Copy the pod name and use the following to check the logs:
+
+```Bash
+kubectl get logs [pod-name]
+```
